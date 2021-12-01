@@ -17,14 +17,14 @@ import CollapsiblePanel from '@splunk/react-ui/CollapsiblePanel';
 import * as config from '@splunk/splunk-utils/config';
 import { createRESTURL } from '@splunk/splunk-utils/url';
 import { handleError, handleResponse } from '@splunk/splunk-utils/fetch';
-
-import { updateKVEntry} from './data';
+import { updateKVEntry,SearchKVStore } from './data';
 
 class AssetRegistryReact extends Component {
 
 
     constructor(props) {
         super(props);
+
         this.state = {
             index_name: '',
             index_description: '',
@@ -33,105 +33,105 @@ class AssetRegistryReact extends Component {
             splunk_app_name: '',
             ability_app_name: '',
             splunk_role_name: '',
-            index_size_mb: ''
+            index_size_mb: '',
+            open: {setOpen: true },
+            infoMessage:{visible: false},
+            setInfoMessage:{visible: false}
         };
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleIndexValidate = this.handleIndexValidate.bind(this);
+        // this.handleRequestClose = this.handleSubmit.bind(this);
+        // this.handleRequestOpen = this.handleSubmit.bind(this);
+        // this.handleMessageRemove = this.handleSubmit.bind(this);
 
     }
+
+    handleMessageRemove = () => {
+        this.setState({ infoMessage:{visible: false} });
+    };
 
     handleChange(event) {
         this.setState({ [event.target.name]: event.target.value });
-    }
-
-
+    };
 
     handleDateChange = (e, { value }) => {
         this.setState({ 'index_created_date': value });
     };
 
+    handleRequestClose = () => {
+        this.setState({ 'setOpen': false });
+        this.setState({ 'open': false });
+    };
+
+    handleRequestOpen = () => {
+        this.setState({ 'setOpen': true });
+        this.setState({ 'open': true });
+    };
 
 
-    // .then(() => {
-    //     setInfoMessage({
-    //         visible: true,
-    //         type: 'success',
-    //         message: 'Row successfully updated',
-    //     });
-    //     // all fine, update tableData
-    //     updateRow(row._key, row);
-    // })
-    // .catch((err) => {
-    //     setInfoMessage({
-    //         visible: true,
-    //         type: 'error',
-    //         message: err,
-    //     });
-    // });
 
     handleSubmit(event) {
         event.preventDefault();
-        updateKVEntry('asset_registry_collection', "", this.state)
-        .then(() => {
-            console.log('success');
-        })
-        .catch((error) => console.log(error));
-       // const collection = 'asset_registry_collection';
+        const defaultErrorMsg = 'Error updating row. Please try again.';
+        // this.setState({infoMessage:{visible: true}});
+        // this.setState({setInfoMessage:{visible: true}});
+        updateKVEntry('asset_registry_collection', "", this.state, defaultErrorMsg)
+            .then(() => {
+                this.setState({infoMessage:{visible: true,type:'success',message:'Row successfully updated'}});
+                console.log('Row successfully updated');
+                this.setState(this.state);
+                // all fine, update tableData
+            })
+            .catch((err) => {
+                console.log('Update to KV Failed' + err);
+            });
 
-       // const url = createRESTURL(
-      //      `storage/collections/data/${collection}/`, { app: config.app, sharing: 'app' }
-       // );
-        // return fetch(url, {
-        //     method: 'POST',
-        //     credentials: 'include',
-        //     headers: {
-        //         'X-Splunk-Form-Key': config.CSRFToken,
-        //         'X-Requested-With': 'XMLHttpRequest',
-        //         'Content-Type': 'application/json',
-        //     },
-        //     body: JSON.stringify(this.state),
-        // })
-        //     .then((response) => {
-        //         if(response.ok) {
+    };
 
-        //             this.state = {
-        //                 index_name: '',
-        //                 index_description: '',
-        //                 index_created_date: '2021-11-27',
-        //                 ags_entitlement_name: '',
-        //                 splunk_app_name: '',
-        //                 ability_app_name: '',
-        //                 splunk_role_name: '',
-        //                 index_size_mb: ''
-        //             };
-        //             handleResponse(200);
-        //         }
+    handleIndexValidate(event) {
+        event.preventDefault();
+        const response = ''
+        const defaultErrorMsg = 'Error updating row. Please try again.';
+        // this.setState({infoMessage:{visible: true}});
+        // this.setState({setInfoMessage:{visible: true}});
+        SearchKVStore('asset_registry_collection', this.state.index_name,  defaultErrorMsg)
+            .then(() => {
+                this.setState({infoMessage:{visible: true,type:'error',message:'Entry For this Asset already exist'}});
+                console.log(response);
+                // all fine, update tableData
+            })
+            .catch((err) => {
+                this.setState({infoMessage:{visible: true,type:'success',message:'No entry exist for this index'}});
+            });
 
-        //     })
-        //     .catch(() => {
-        //         console.log('error');
-        //         handleError('error');
-        //     })
-        //     .catch((err) => err instanceof Object ? 'error' : err); // handleError sometimes returns an Object
-    }
+    };
 
     render() {
 
         return (
             <form onSubmit={this.handleSubmit}>
                 <ControlGroup>
-                    <Message appearance="fill" type="success" onRequestRemove={() => { }}>
-                        An info message for the user.
-                    </Message>
+                <Message
+                    appearance="fill"
+                    type={this.state.infoMessage.type || 'info'}
+                    onRequestRemove={this.handleMessageRemove}
+                >
+                    {this.state.infoMessage.message}
+                </Message>
                 </ControlGroup>
-                <CollapsiblePanel defaultOpen="true" title="Index Overview" description="Basic details of the index" >
+
+                <CollapsiblePanel
+                    title="Index Overview"
+                    onRequestClose={this.handleRequestClose}
+                    onRequestOpen={this.handleRequestOpen}
+                    open={this.state.open}
+                    description="Basic details of the index"
+                    panelId={1}
+                >
                     <ControlGroup label="Index Name" tooltip="Provide the Index Name to be created">
                         <Text required canClear defaultValue="" placeholder="index name" name="index_name" value={this.state.index_name} onChange={this.handleChange} />
-                        <Button label="Check" appearance="destructive"
-                            onSubmit={() => {
-                                console.log(this.index_name);
-                            }}
-                        />
+                        <Button label="Validate" appearance="primary" type="IndexValidate" value="ValidateateIndex" onClick={this.handleIndexValidate} />
                     </ControlGroup>
                     <ControlGroup label="IndexDescription" tooltip="Provide a brief description of the index">
                         <Text
@@ -185,8 +185,7 @@ class AssetRegistryReact extends Component {
                         />
                     </ControlGroup>
                 </CollapsiblePanel>
-                <input type="submit" value="Submit" />
-
+                <Button label="Submit" appearance="primary" type="submit" value="Submit" />
             </form>
         );
     }
