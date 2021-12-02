@@ -15,12 +15,12 @@ import { includes, without } from 'lodash';
 import SplunkThemeProvider from '@splunk/themes/SplunkThemeProvider';
 // Custom Function imports
 import { StyledContainer, StyledGreeting, NotificationBox } from './AssetRegistryReactStyles';
-import { updateKVEntry, SearchKVStore } from './data';
-import {validateAssetRegistryFormInput} from './form-validate'
+import { updateKVStore,searchKVStore,insertKVStore} from './ManageKVStore';
+import {validateAssetRegistryFormInput} from './FormValidate'
 
 function  AssetRegistryReact () {
 
-    const [FormInputvalues, FormInputsetValues] = useState({
+    const [FormInputvalues, setFormInputValues] = useState({
         index_name: '',
         index_description: '',
         index_type:'Event',
@@ -28,13 +28,18 @@ function  AssetRegistryReact () {
         ags_entitlement_name:'',
         ability_app_name:'',
         splunk_role_name:'',
-        index_size_mb:'100'
+        index_size_mb:'100',
+        _key:''
     })
 
     const [infoMessage, setInfoMessage] = useState({ visible: false });
-    const [open, setOpen] = useState([]);
+    const [open, setOpen] = useState([{open:true}]);
     const [formErrors, setFormErrors] = useState({});
     const [isSubmit, setIsSubmit] = useState(false);
+    // const [isSubmitDisabled, setisSubmitDisabled] = useState(true);
+    // const [indexInputDisabled, setindexInputDisabled] = useState(false);
+
+
     //const [formInputValid, setFormInputValid] = useState({
     //    index_name_valid:false
     //});
@@ -46,7 +51,7 @@ function  AssetRegistryReact () {
 
 
     const handleDateChange = (event, {value}) => {
-        FormInputsetValues({ index_created_date: value });
+        setFormInputValues({ index_created_date: value });
     };
 
     const handleRequestClose = ({ panelId }) => {
@@ -60,13 +65,16 @@ function  AssetRegistryReact () {
 
     const handleInputChange = (event) => {
         const {name, value} = event.target
-        FormInputsetValues({...FormInputvalues, [name]: value})
+        setFormInputValues({...FormInputvalues, [name]: value})
     }
 
+    const clearState = () => {
+        setFormInputValues({ ...FormInputvalues });
+      };
 
     useEffect(() => {
        console.log(formErrors);
-       if (Object.keys(formErrors).length === 0 && isSubmit ){
+       if (Object.keys(formErrors).length === 0 && (isSubmit) ){
            console.log(FormInputvalues);
            setIsSubmit(true)
        }
@@ -78,18 +86,18 @@ function  AssetRegistryReact () {
         const InputformErrors = validateAssetRegistryFormInput(FormInputvalues);
         setFormErrors (InputformErrors);
 
-
         if (Object.keys(InputformErrors).length === 0) {
-
-            updateKVEntry('asset_registry_collection', FormInputvalues.index_name , FormInputvalues, defaultErrorMsg)
+            insertKVStore('asset_registry_collection', FormInputvalues, defaultErrorMsg)
             .then((response) => {
                 console.log(response);
                 if (response.ok){
+
                 setInfoMessage({
                     visible: true,
                     type: 'success',
                     message: 'Row successfully updated',
                 });
+                clearState();
             }
             else {
                 setInfoMessage({
@@ -111,12 +119,52 @@ function  AssetRegistryReact () {
 
     }
 
-    return (
+    /* This function is to validate if an Index exist  */
+    function handleIndexValidate(event) {
+        event.preventDefault();
+        const defaultErrorMsg = "There is some error from the SPLUNK KVStore"
+        if (Object.keys(FormInputvalues.index_name).length !== 0) {
+            searchKVStore('asset_registry_collection', FormInputvalues.index_name , '', defaultErrorMsg)
+            .then((response) => {
+                if (response.ok){
+                setInfoMessage({
+                    visible: true,
+                    type: 'error',
+                    message: 'There is alredy an entry exist for this index',
+                });
+            }
+            else {
+                // setisSubmitDisabled(false)
+                // setindexInputDisabled(true)
+                setInfoMessage({
+                    visible: true,
+                    type: 'success',
+                    message: 'No entry exist for this index',
+                });
+            }
+            })
+            .catch((defaultErrorMsg) => {
+                setInfoMessage({
+                    visible: true,
+                    type: 'error',
+                    message: defaultErrorMsg,
+                });
+            });
+        }
+        else{
+            setInfoMessage({
+                visible: true,
+                type: 'error',
+                message: 'Please enter a value in index name before Clicking Check Button',
+            });
+        };
+    }
 
-        <form onSubmit={handleSubmit}>
+    return (
+        <form >
             <SplunkThemeProvider family="prisma" colorScheme="light"  density="comfortable">
                {infoMessage.visible && (
-                        <Message
+                        <Message style={{ background: '#c3cbd4'}}
                             appearance="fill"
                             type={infoMessage.type || 'info'}
                             onRequestRemove={handleMessageRemove}
@@ -124,7 +172,6 @@ function  AssetRegistryReact () {
                         >
                             {infoMessage.message}
                         </Message>
-
                 )}
                 <CollapsiblePanel
                     title="Index Overview"
@@ -136,20 +183,18 @@ function  AssetRegistryReact () {
                 >
                     <ControlGroup label="Index Name" tooltip="Provide the Index Name to be created" help={formErrors.index_name_error}>
                         <Text
-                            canClear
                             placeholder="index name"
                             name="index_name"
                             onChange={handleInputChange}
                             value={FormInputvalues.index_name}
-                            error={formErrors.index_name_valid}
-
+                            error={formErrors.index_name_Invalid}
                         />
                         <Button
-                            label="Validate"
+                            label="Check"
                             appearance="primary"
-                            type="IndexValidate"
-                            value="ValidateateIndex"
-
+                            type="submit"
+                            value="IndexValidate"
+                            onClick={handleIndexValidate}
                         />
                     </ControlGroup>
                     <ControlGroup label="IndexDescription" tooltip="Provide a brief description of the index"help={formErrors.index_description_error} >
@@ -161,7 +206,7 @@ function  AssetRegistryReact () {
                             onChange={handleInputChange}
                             value={FormInputvalues.index_description}
                             placeholder="e.g. This index contains << application | Security | Privacy | Sensitive >> data for OneSplunk Application"
-                            error={formErrors.index_description_valid}
+                            error={formErrors.index_description_Invalid}
                         />
                     </ControlGroup>
                     <ControlGroup label="Index Type" help={formErrors.index_type_error}>
@@ -169,7 +214,7 @@ function  AssetRegistryReact () {
                             name="index_type"
                             value={FormInputvalues.index_type}
                             onChange={handleInputChange}
-                            error={formErrors.index_type_valid}
+                            error={formErrors.index_type_Invalid}
                         >
                             <RadioList.Option value="Event">Event</RadioList.Option>
                             <RadioList.Option value="Summary">Summary Event</RadioList.Option>
@@ -182,33 +227,30 @@ function  AssetRegistryReact () {
                             name="index_created_date"
                             value={FormInputvalues.index_created_date}
                             onChange={handleDateChange}
-                            error={formErrors.index_created_date_valid}
+                            error={formErrors.index_created_date_Invalid}
                         />
                     </ControlGroup>
-                    <ControlGroup label="AGS Entitlement Name" tooltip="Provide the AGS Entitlement Name, if not available then enter TBC or NA" help={formErrors.ags_entitlement_name} >
+                    <ControlGroup label="AGS Entitlement Name" tooltip="Provide the AGS Entitlement Name, if not available then enter TBC or NA" help={formErrors.ags_entitlement_name_error} >
                         <Text
                             name="ags_entitlement_name"
-                            canClear
                             placeholder="AGS Entitlement Name"
                             value={FormInputvalues.ags_entitlement_name}
                             onChange={handleInputChange}
-                            error={formErrors.ags_entitlement_name_valid}
+                            error={formErrors.ags_entitlement_name_Invalid}
                         />
                     </ControlGroup>
                     <ControlGroup label="Role Name" tooltip="Splunk Role Name" help={formErrors.splunk_role_name_error}>
                         <Text
                             name="splunk_role_name"
-                            canClear
                             placeholder="splunk role name"
                             value={FormInputvalues.splunk_role_name}
                             onChange={handleInputChange}
-                            error={formErrors.splunk_role_name_valid}
+                            error={formErrors.splunk_role_name_Invalid}
                         />
                     </ControlGroup>
                     <ControlGroup label="Ability App Name" tooltip="Ability App Name" >
                         <Text
                             name="ability_app_name"
-                            canClear
                             placeholder="Ability App name"
                             value={FormInputvalues.ability_app_name}
                             onChange={handleInputChange}
@@ -231,11 +273,11 @@ function  AssetRegistryReact () {
                             startAdornment={<div style={{ padding: '0 8px' }}>MB</div>}
                             value={FormInputvalues.index_size_mb}
                             onChange={handleInputChange}
-                            error={formErrors.index_size_mb_valid}
+                            error={formErrors.index_size_mb_Invalid}
                         />
                     </ControlGroup>
                 </CollapsiblePanel>
-                <Button label="Submit" appearance="primary" type="submit" value="Submit" />
+                <Button label="Submit" appearance="primary" type="submit" value="Submit" onClick={handleSubmit} />
              </SplunkThemeProvider>
             </form>
         );
