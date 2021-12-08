@@ -5,6 +5,7 @@ import { SplunkThemeProvider } from '@splunk/themes';
 import { defaultTheme, getThemeOptions } from '@splunk/splunk-utils/themes';
 
 import AssetRegistryReact from '../src/AssetRegistryReact';
+import HomeDashboardReact from '../src/HomeDashboardReact';
 
 const themeProviderSettings = getThemeOptions(defaultTheme() || 'enterprise');
 
@@ -12,6 +13,7 @@ const containerEl = document.getElementById('main-component-container');
 render(
     <SplunkThemeProvider {...themeProviderSettings}>
         <AssetRegistryReact name="World" />
+        <HomeDashboardReact name="Test" />
     </SplunkThemeProvider>,
     containerEl
 );

@@ -4,7 +4,8 @@ const baseComponentConfig = require('@splunk/webpack-configs/component.config').
 
 module.exports = webpackMerge(baseComponentConfig, {
     entry: {
-        AssetRegistryReact: path.join(__dirname, 'src/AssetRegistryReact.jsx'),
+        AssetRegistryReact: path.join(__dirname, 'src/CreateAsset.jsx'),
+        HomeDashboardReact: path.join(__dirname, 'src/HomeDashboard.jsx')
     },
     output: {
         path: path.join(__dirname),

@@ -10,19 +10,14 @@ import CollapsiblePanel from '@splunk/react-ui/CollapsiblePanel';
 import { includes, without } from 'lodash';
 import SplunkThemeProvider from '@splunk/themes/SplunkThemeProvider';
 import Menu from '@splunk/react-ui/Menu';
-import {
-    BrowserRouter as Router,
-    Switch,
-    Route,
-    Link
-  } from "react-router-dom";
+
 // Custom Function imports
 import { StyledContainer, StyledGreeting, NotificationBox } from './AssetRegistryReactStyles';
 import { updateKVStore,searchKVStore,insertKVStore } from './ManageKVStore';
 import { validateAssetRegistryFormInput } from './FormValidate'
 
 
-function  CreateAsset () {
+function  AssetRegistryReact () {
 
     const [FormInputvalues, setFormInputValues] = useState({
         index_name: '',
@@ -293,4 +288,4 @@ function  CreateAsset () {
         );
 }
 
-export default CreateAsset;
+export default AssetRegistryReact;

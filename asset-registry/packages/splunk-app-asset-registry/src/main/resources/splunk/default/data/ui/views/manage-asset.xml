@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<view template="splunk-app-asset-registry:/templates/manage-asset.html" type="html">
+	<label>ManageAsset</label>
+</view>
