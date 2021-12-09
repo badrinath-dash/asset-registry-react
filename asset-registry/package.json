@@ -24,6 +24,8 @@
     "dependencies": {
         "@hookform/resolvers": "^2.8.3",
         "@splunk/dashboard-context": "^23.4.0",
+        "@splunk/dashboard-core": "^23.5.0",
+        "react-generic-tile": "^1.0.5",
         "react-hook-form": "^7.20.2",
         "yup": "^0.32.11"
     }

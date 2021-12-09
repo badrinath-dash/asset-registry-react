@@ -1,7 +1,7 @@
 import React from 'react';
 
 import layout from '@splunk/react-page';
-import HomeDashboardReact from '@splunk/asset-registry-react';
+import HomeDashboardReact from '@splunk/asset-registry-react/HomeDashboardReact';
 import { SplunkThemeProvider } from '@splunk/themes';
 import { DashboardContextProvider } from '@splunk/dashboard-context';
 import EnterpriseViewOnlyPreset from '@splunk/dashboard-presets/EnterpriseViewOnlyPreset';

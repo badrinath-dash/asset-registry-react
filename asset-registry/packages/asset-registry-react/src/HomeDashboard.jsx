@@ -1,124 +1,79 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import Table from '@splunk/react-ui/Table';
-import Line from '@splunk/react-sparkline/Line';
-import SplunkVisualization from '@splunk/visualizations/common/SplunkVisualization';
 import SplunkThemeProvider from '@splunk/themes/SplunkThemeProvider';
-import { cloneDeep } from 'lodash';
+import Message from '@splunk/react-ui/Message';
+import Card from '@splunk/react-ui/Card';
+import DL from '@splunk/react-ui/DefinitionList';
+//import profiles from "./data.json";
+import { searchKVStore } from './ManageKVStore';
+import  { item, card } from './AssetRegistryReactStyles';
 
-// Convert sparkline data from the datasource a format usable by the @splunk/react-sparkline component
-const formatSparklineData = (data) => {
-    return data.slice(1).map((val) => parseInt(val, 10));
-};
-
-// Extract data from the datasource a format usable by the table
-const formatData = (dataSources) => {
-    if (!dataSources.primary.data) {
-        return {
-            fields: [],
-            data: [],
-        };
-    }
-
-    // Get the names of the fields
-    const fields = dataSources.primary.data.fields.map((f) => f.name);
-    const data = [];
-
-    // Convert the data from column to row form
-    dataSources.primary.data.columns.forEach((col, i) => {
-        col.forEach((item, j) => {
-            if (!data[j]) {
-                data.push({});
-            }
-            data[j][fields[i].replace(/\s/g, '')] =
-                fields[i] === 'Logins Last Week'
-                    ? formatSparklineData(item)
-                    : item;
-        });
-    });
-
-    return { fields, data };
-};
-
-const HomeDashboardReact = ({ options, dataSources }) => {
-    const [tableData, setTableData] = useState(formatData(dataSources));
+const HomeDashboardReact = () => {
+    const [infoMessage, setInfoMessage] = useState({ visible: false });
+    const [products, setProducts] = useState([]);
+    const handleMessageRemove = () => {
+        setInfoMessage({ visible: false });
+    };
 
     useEffect(() => {
-        setTableData(formatData(dataSources));
-    }, [dataSources]);
-
-    const handleRequestMoveRow = useCallback(
-        ({ fromIndex, toIndex }) => {
-            if (!tableData) {
-                return;
-            }
-            const data = cloneDeep(tableData.data);
-            const rowToMove = data[fromIndex];
-
-            const insertionIndex = toIndex < fromIndex ? toIndex : toIndex + 1;
-            data.splice(insertionIndex, 0, rowToMove);
-
-            const removalIndex =
-                toIndex < fromIndex ? fromIndex + 1 : fromIndex;
-            data.splice(removalIndex, 1);
-
-            setTableData({
-                fields: tableData.fields,
-                data,
+        const defaultErrorMsg = 'There is some error in data retrival, please try again';
+        searchKVStore('asset_registry_collection', '', '', defaultErrorMsg)
+            .then((response) => {
+                if (response.ok) {
+                    response.json().then(data => {
+                        console.log(data);
+                        setProducts(data);
+                      });
+                    setInfoMessage({
+                        visible: true,
+                        type: 'success',
+                        message: 'Data Retrival from KVStore',
+                    });
+                } else {
+                    setProducts(response.json);
+                    setInfoMessage({
+                        visible: true,
+                        type: 'success',
+                        message: 'No entry exist for this index',
+                    });
+                }
+            })
+            .then((data) => {
+                console.log(data);
+            })
+            .catch((defaultErrorMsg) => {
+                setInfoMessage({
+                    visible: true,
+                    type: 'error',
+                    message: defaultErrorMsg,
+                });
             });
-        },
-        [tableData]
-    );
+
+    }, []);
 
     return (
         <div>
-            <div>
-                <SplunkThemeProvider
-                    family="prisma"
-                    colorScheme="dark"
-                    density="comfortable"
+            {infoMessage.visible && (
+                <Message
+                    style={{ background: '#c3cbd4' }}
+                    appearance="fill"
+                    type={infoMessage.type || 'info'}
+                    onRequestRemove={handleMessageRemove}
                 >
-                    <Table onRequestMoveRow={handleRequestMoveRow}>
-                        <Table.Head>
-                            {tableData.fields.map((field) => (
-                                <Table.HeadCell key={field}>
-                                    {field}
-                                </Table.HeadCell>
-                            ))}
-                        </Table.Head>
-                        <Table.Body>
-                            {tableData.data.map((row) => (
-                                <Table.Row key={row.User}>
-                                    <Table.Cell>{row.User}</Table.Cell>
-                                    <Table.Cell>{row.TotalLogins}</Table.Cell>
-                                    <Table.Cell>
-                                        <Line
-                                            data={row.LoginsLastWeek}
-                                            {...options}
-                                        />
-                                    </Table.Cell>
-                                </Table.Row>
-                            ))}
-                        </Table.Body>
-                    </Table>
-                </SplunkThemeProvider>
-            </div>
+                    {infoMessage.message}
+                </Message>
+            )}
+            <SplunkThemeProvider family="prisma" colorScheme="light" density="comfortable">
+                 <div className={card}>
+                    {products.map((product) => (
+                        <div className={item} key={product._key}>
+                            <p>{product.index_name}</p>
+                        </div>
+                    ))}
+                </div>
+
+            </SplunkThemeProvider>
         </div>
     );
-};
-
-HomeDashboardReact.config = {
-    dataContract: {},
-    optionsSchema: {},
-    key: 'splunk.CustomTable',
-    name: 'CustomTable',
-};
-
-HomeDashboardReact.propTypes = {
-    ...SplunkVisualization.propTypes,
-};
-
-HomeDashboardReact.defaultProps = {
-    ...SplunkVisualization.defaultProps,
 };
 
 export default HomeDashboardReact;

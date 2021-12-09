@@ -57,7 +57,7 @@ function updateKVStore(collection, key, data, defaultErrorMsg) {
 
 function searchKVStore(collection, key, defaultErrorMsg) {
     const url = createRESTURL(
-        `storage/collections/data/${collection}/${encodeURIComponent(key)}`, { app: config.app, sharing: 'app' }
+        `storage/collections/data/${collection}`, { app: config.app, sharing: 'app' }
     );
     return fetch(url, {
             method: 'GET',
@@ -74,16 +74,14 @@ function searchKVStore(collection, key, defaultErrorMsg) {
             } else {
                 handleError(defaultErrorMsg);
             }
-            return (response);
+            return response;
         })
-        .then((json) => {
-            // all good, token is ready
-            return (json)
+        .then((data) => {
+            return data;
         })
         .catch(handleError(defaultErrorMsg))
         .catch((err) => (err instanceof Object ? defaultErrorMsg : err)); // handleError sometimes returns an Object
 }
-
 
 
 export { updateKVStore, searchKVStore, insertKVStore };

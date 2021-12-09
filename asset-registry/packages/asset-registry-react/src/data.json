@@ -1,0 +1,34 @@
+[{
+        "id": 1,
+        "fullname": "ABC",
+        "skills": [
+            { "name": "asp.net mvc" },
+            { "name": "css" },
+            { "name": "knockout js" },
+            { "name": "monitoring" },
+            { "name": "ui" },
+            { "name": "ajax" },
+            { "name": "code review" },
+            { "name": "design pattern" },
+            { "name": "entity from work" },
+            { "name": "git" },
+            { "name": "ioc" },
+            { "name": "jquery" },
+            { "name": "json" }
+        ]
+    },
+
+    {
+        "id": 2,
+        "fullname": "edf",
+        "skills": [
+            { "name": "core java" },
+            { "name": "oracle" },
+            { "name": "asp.net" },
+            { "name": "web api" },
+            { "name": "artificial in.." },
+            { "name": "c#" },
+            { "name": "software eng.." }
+        ]
+    }
+]
