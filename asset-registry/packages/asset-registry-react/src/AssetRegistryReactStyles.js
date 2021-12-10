@@ -22,21 +22,8 @@ const NotificationBox = styled.div `
 background-color: #faebd7;
 `;
 
-const item = styled.div `container {
-        display: flex;
-        justify - content: center;
-        flex - wrap: wrap;
-        gap: 2e m;
-    }`;
-
-const card = styled.div `
-text - align: center;
-padding: 10 px;
-width: 300 px;
-border - radius: 5 px;
-padding: 1e m;
-box - shadow: rgba(99, 99, 99, 0.2) 0 px 2 px 8 px 0 px;
-}`
 
 
-export { StyledContainer, StyledGreeting, NotificationBox, item, card };
+
+
+export { StyledContainer, StyledGreeting, NotificationBox, };

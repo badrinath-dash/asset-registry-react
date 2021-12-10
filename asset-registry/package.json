@@ -27,6 +27,7 @@
         "@splunk/dashboard-core": "^23.5.0",
         "react-generic-tile": "^1.0.5",
         "react-hook-form": "^7.20.2",
+        "styled-components": "^5.3.3",
         "yup": "^0.32.11"
     }
 }

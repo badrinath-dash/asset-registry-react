@@ -16,7 +16,7 @@ const themeProviderSettings = getThemeOptions(defaultTheme() || 'enterprise');
 layout(
     <SplunkThemeProvider {...themeProviderSettings}>
         <StyledContainer>
-            <StyledGreeting>Splunk AssetRegistry</StyledGreeting>
+            <StyledGreeting>Manage Splunk Assets</StyledGreeting>
             <AssetRegistryReact name="from inside AssetRegistryReact" />
         </StyledContainer>
     </SplunkThemeProvider>
