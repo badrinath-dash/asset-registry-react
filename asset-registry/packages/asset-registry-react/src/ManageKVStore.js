@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import * as config from '@splunk/splunk-utils/config';
 import { createRESTURL } from '@splunk/splunk-utils/url';
 import { handleError, handleResponse } from '@splunk/splunk-utils/fetch';
@@ -56,9 +57,14 @@ function updateKVStore(collection, key, data, defaultErrorMsg) {
 }
 
 function searchKVStore(collection, key, defaultErrorMsg) {
-    const url = createRESTURL(
-        `storage/collections/data/${collection}`, { app: config.app, sharing: 'app' }
-    );
+    let url = [];
+    if (key.length === 0){
+        url = createRESTURL(`storage/collections/data/${collection}`, { app: config.app, sharing: 'app' });
+    }
+    else{
+        url = (createRESTURL(`storage/collections/data/${collection}/${encodeURIComponent(key)}`, { app: config.app, sharing: 'app' }));
+    }
+
     return fetch(url, {
             method: 'GET',
             credentials: 'include',

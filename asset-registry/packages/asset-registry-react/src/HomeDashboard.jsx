@@ -12,10 +12,11 @@ import Remove from '@splunk/react-icons/Remove';
 import Search from '@splunk/react-icons/Search';
 import { pick } from '@splunk/themes';
 import Text from '@splunk/react-ui/Text';
-import HamburgerMenu from '@splunk/react-icons/HamburgerMenu';
+import ControlGroup from '@splunk/react-ui/ControlGroup';
 import styled, { css } from 'styled-components';
 import { includes, without } from 'lodash';
 import { searchKVStore } from './ManageKVStore';
+
 
 
 
@@ -45,13 +46,17 @@ const StyledButton = styled(Button)
 const HomeDashboardReact = () => {
     const [infoMessage, setInfoMessage] = useState({ visible: false });
     const [assetValues, setAssetValues] = useState([]);
+    const [searchTerm, setSearchTerm] = useState([]);
+
     const handleMessageRemove = () => {
         setInfoMessage({ visible: false });
     };
 
+
+
     useEffect(() => {
-        const defaultErrorMsg = 'There is some error in data retrival, please try again';
-        searchKVStore('asset_registry_collection', '', '', defaultErrorMsg)
+        const defaultErrorMsg = 'There is some error in data retrival, please try again or refresh this page';
+        searchKVStore('asset_registry_collection', '', defaultErrorMsg)
             .then((response) => {
                 if (response.ok) {
                     response.json().then((data) => {
@@ -93,32 +98,35 @@ const HomeDashboardReact = () => {
 
     const actionsSecondaryMenuOne = (
         <Menu>
-            <Menu.Item icon={<Refresh />}>Refresh</Menu.Item>
+            <Menu.Item icon={<Refresh />}>Ability</Menu.Item>
             <Menu.Divider />
-            <Menu.Item icon={<Clone />}>Duplicate</Menu.Item>
+            <Menu.Item icon={<Clone />}>POW</Menu.Item>
+            <Menu.Item icon={<Clone />}>Clone</Menu.Item>
             <Menu.Item icon={<Remove />}>Delete</Menu.Item>
         </Menu>
     );
 
-    const actionsSecondaryMenuTwo = (
-        <Menu>
-            <Menu.Item>Favorite</Menu.Item>
-            <Menu.Item>Share</Menu.Item>
-        </Menu>
-    );
+    function SearchInputChange (event) {
+        event.preventDefault();
+        console.log(searchTerm);
+    }
+
 
     const selectedValues = assetValues;
 
-    const Cards = assetValues.map((assetValue) => (
-
+    const Cards = assetValues.filter((selectedValues) => {
+        if (searchTerm === ""){
+          return selectedValues;
+        }if (selectedValues.index_name.toLowerCase().includes(searchTerm)){
+            return selectedValues;
+    }
+    }).map((assetValue) => (
         <Card key={assetValue._key}>
                 <Card.Header
                     title={assetValue.index_name}
                     subtitle={assetValue.index_size_mb}
-                    actionPrimary={actionPrimary}
                     actionsSecondary={actionsSecondaryMenuOne}
                 />
-
                 <Card.Body>
                    {assetValue.index_description}
                 </Card.Body>
@@ -141,19 +149,26 @@ const HomeDashboardReact = () => {
                     {infoMessage.message}
                 </Message>
             )}
+
             <Text
             defaultValue=""
+            name="search_input"
+            onChange= {(event) => {
+                setSearchTerm(event.target.value.toLowerCase())
+            }}
             endAdornment={
                 <>
-                    <StyledButton appearance="pill" icon={<Search />} />
-                    <span>|</span>
-                    <StyledButton appearance="pill"  />
+                <StyledButton to="http://duckduckgo.com"
+                openInNewContext
+                onClick={SearchInputChange}
+                 appearance="pill"
+                 icon={<Search />} />
                 </>
             }
             inline
-            placeholder="Search field"
-            startAdornment={<StyledButton appearance="pill" icon={<HamburgerMenu />} />}
+            placeholder="Enter index name to search"
             />
+
             <SplunkThemeProvider family="prisma" colorScheme="light" density="comfortable">
                 <div>
                     <CardLayout cardWidth={250} gutterSize={15}  alignCards="left">
