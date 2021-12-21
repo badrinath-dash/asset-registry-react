@@ -9,17 +9,17 @@ import Date from '@splunk/react-ui/Date';
 import CollapsiblePanel from '@splunk/react-ui/CollapsiblePanel';
 import { includes, without } from 'lodash';
 import SplunkThemeProvider from '@splunk/themes/SplunkThemeProvider';
-import { useParams } from 'react-router-dom';
-
+import queryString from 'query-string'
 // Custom Function imports
-import { StyledContainer, StyledGreeting, NotificationBox } from './AssetRegistryReactStyles';
-import { updateKVStore,searchKVStore,insertKVStore } from './ManageKVStore';
+import { searchKVStore,insertKVStore } from './ManageKVStore';
 import { validateAssetRegistryFormInput } from './FormValidate'
+
+
 
 
 function  ViewAssetRegistryReact () {
 
-    const { id } = useParams();
+
     const [FormInputvalues, setFormInputValues] = useState({
         index_name: '',
         index_description: '',
@@ -87,26 +87,33 @@ function  ViewAssetRegistryReact () {
       };
 
       useEffect(() => {
+        let queries = queryString.parse(location.search)
+        //console.log(queries);
+        //onsole.log(queries.key);
         const defaultErrorMsg = 'There is some error in data retrival, please try again or refresh this page';
-        searchKVStore('asset_registry_collection', 'id', defaultErrorMsg)
+        searchKVStore('asset_registry_collection', queries.key, defaultErrorMsg)
             .then((response) => {
-                if (response.ok) {
+                if (response.ok ) {
                     response.json().then((data) => {
                         console.log(data);
                         setFormInputValues(data);
                     });
-                    setInfoMessage({
-                        visible: true,
-                        type: 'success',
-                        message: 'Data Retrival from KVStore',
-                    });
+                    setTimeout(() => {
+                        setInfoMessage({
+                            visible: true,
+                            type: 'success',
+                            message: 'Successfully retrieved the data from SPLUNK KVStore',
+                        });
+                    }, 10);
                 } else {
                     //setAssetValues(response.json);
-                    setInfoMessage({
-                        visible: true,
-                        type: 'success',
-                        message: 'No entry exist for this index',
-                    });
+                    setTimeout(() => {
+                        setInfoMessage({
+                            visible: true,
+                            type: 'error',
+                            message: 'Error in data Retrival from SPLUNK KVStore, please refresh the page',
+                        });
+                    }, 1000);
                 }
             })
             .catch((defaultErrorMsg) => {
@@ -264,14 +271,14 @@ function  ViewAssetRegistryReact () {
                                 onChange={handleDateChange}
                                 error={formErrors.index_created_date_Invalid} />
                         </ControlGroup>
-                        <ControlGroup label="AGS Entitlement Name" tooltip="Provide the AGS Entitlement Name, if not available then enter TBC or NA" help={formErrors.ags_entitlement_name_error}>
+                        {/* <ControlGroup label="AGS Entitlement Name" tooltip="Provide the AGS Entitlement Name, if not available then enter TBC or NA" help={formErrors.ags_entitlement_name_error}>
                             <Text
                                 name="ags_entitlement_name"
                                 placeholder="AGS Entitlement Name"
                                 value={FormInputvalues.ags_entitlement_name}
                                 onChange={handleInputChange}
                                 error={formErrors.ags_entitlement_name_Invalid} />
-                        </ControlGroup>
+                        </ControlGroup> */}
                         <ControlGroup label="Role Name" tooltip="Splunk Role Name" help={formErrors.splunk_role_name_error}>
                             <Text
                                 name="splunk_role_name"

@@ -1,5 +1,8 @@
 import styled from 'styled-components';
-import { variables, mixins } from '@splunk/themes';
+import { variables, mixins, pick } from '@splunk/themes';
+import Button from '@splunk/react-ui/Button';
+import { css } from 'styled-components';
+
 
 const StyledContainer = styled.div `
     ${mixins.reset('inline-block')};
@@ -23,7 +26,29 @@ background-color: #faebd7;
 `;
 
 
+const StyledButton = styled(Button)
+`
+    ${pick({
+        prisma: {
+            comfortable: css`
+                width: 26px;
+                min-width: 26px;
+                min-height: 26px;
+                margin: 8px;
+                padding: 0;
+            `,
+            compact: css`
+                width: 22px;
+                min-width: 22px;
+                min-height: 22px;
+                margin: 8px;
+                padding: 0;
+            `,
+        },
+    })}
+`;
 
 
 
-export { StyledContainer, StyledGreeting, NotificationBox, };
+
+export { StyledContainer, StyledGreeting, NotificationBox,StyledButton };

@@ -1,7 +1,7 @@
 import React from 'react';
 
 import layout from '@splunk/react-page';
-import { ViewAssetRegistryReact } from '@splunk/asset-registry-react/ViewAssetDetails';
+import ViewAssetRegistryReact from '@splunk/asset-registry-react/ViewAssetRegistryReact';
 import { SplunkThemeProvider } from '@splunk/themes';
 import { DashboardContextProvider } from '@splunk/dashboard-context';
 import EnterpriseViewOnlyPreset from '@splunk/dashboard-presets/EnterpriseViewOnlyPreset';
@@ -17,9 +17,7 @@ layout(
     <SplunkThemeProvider {...themeProviderSettings}>
         <StyledContainer>
             <StyledGreeting>Manage Splunk Assets</StyledGreeting>
-            <AssetRegistryReact name="from inside ViewAssetRegistryReact" />
+            <ViewAssetRegistryReact name="from inside ViewAssetRegistryReact" />
         </StyledContainer>
     </SplunkThemeProvider>
 );
-
-

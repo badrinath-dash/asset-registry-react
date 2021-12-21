@@ -1,4 +1,5 @@
 <nav>
-    <view name="Home" default="true"/>
-     <view name="Manage Asset" default="true"/>
+    <view name="home" default="true"/>
+     <view name="manage-asset" default="true"/>
+     <view name="view-asset" default="true"/>
 </nav>

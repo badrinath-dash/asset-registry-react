@@ -10,43 +10,27 @@ import Refresh from '@splunk/react-icons/Refresh';
 import Clone from '@splunk/react-icons/Clone';
 import Remove from '@splunk/react-icons/Remove';
 import Search from '@splunk/react-icons/Search';
-import { pick } from '@splunk/themes';
 import Text from '@splunk/react-ui/Text';
-import ControlGroup from '@splunk/react-ui/ControlGroup';
-import styled, { css } from 'styled-components';
+import {
+    Redirect,
+    BrowserRouter as Router,
+    Switch,
+    useLocation,
+    useHistory
+  } from "react-router-dom";
+import Clickable, { isInternalLink, NavigationProvider } from '@splunk/react-ui/Clickable';
 import { includes, without } from 'lodash';
 import { searchKVStore } from './ManageKVStore';
-
-
-
-
-const StyledButton = styled(Button)
-`
-    ${pick({
-        prisma: {
-            comfortable: css`
-                width: 26px;
-                min-width: 26px;
-                min-height: 26px;
-                margin: 8px;
-                padding: 0;
-            `,
-            compact: css`
-                width: 22px;
-                min-width: 22px;
-                min-height: 22px;
-                margin: 8px;
-                padding: 0;
-            `,
-        },
-    })}
-`;
+import { StyledButton } from './AssetRegistryReactStyles';
 
 
 const HomeDashboardReact = () => {
+    // const history = useHistory();
     const [infoMessage, setInfoMessage] = useState({ visible: false });
     const [assetValues, setAssetValues] = useState([]);
     const [searchTerm, setSearchTerm] = useState([]);
+    const [indexName, setIndexName] = useState([]);
+
 
     const handleMessageRemove = () => {
         setInfoMessage({ visible: false });
@@ -86,14 +70,7 @@ const HomeDashboardReact = () => {
             });
     }, []);
 
-    const handleChange = (e, { value: clickValue }) => {
-        const prevValues = assetValues;
-        if (includes(prevValues, clickValue)) {
-            setAssetValues(without(prevValues, clickValue));
-        } else {
-            setAssetValues(prevValues.concat(clickValue));
-        }
-    };
+
     const actionPrimary = <Button appearance="secondary" icon={<Pencil hideDefaultTooltip />} />;
 
     const actionsSecondaryMenuOne = (
@@ -101,7 +78,7 @@ const HomeDashboardReact = () => {
             <Menu.Item icon={<Refresh />}>Ability</Menu.Item>
             <Menu.Divider />
             <Menu.Item icon={<Clone />}>POW</Menu.Item>
-            <Menu.Item icon={<Clone />}>Clone</Menu.Item>
+            <Menu.Item icon={<Clone />}  to={`/view-asset/${assetValues.index_name}`} openInNewContext>Edit</Menu.Item>
             <Menu.Item icon={<Remove />}>Delete</Menu.Item>
         </Menu>
     );
@@ -111,9 +88,20 @@ const HomeDashboardReact = () => {
         console.log(searchTerm);
     }
 
+    function handleCardSelect(event) {
+        //event.preventDefault();
+        console.log(event);
+        // history.push("/view-asset");
+        return  <Redirect  to={`/view-asset/_key=${event}`} />
+    }
 
+    const handleClick = (e, { openInNewContext, to }) => {
+        if (!openInNewContext && isInternalLink(to)) {
+            e.preventDefault();
+            window.alert(`In NavigationProvider click handler, to: ${to}`); // eslint-disable-line no-alert
+        }
+    };
     const selectedValues = assetValues;
-
     const Cards = assetValues.filter((selectedValues) => {
         if (searchTerm === ""){
           return selectedValues;
@@ -126,13 +114,18 @@ const HomeDashboardReact = () => {
                     title={assetValue.index_name}
                     subtitle={assetValue.index_size_mb}
                     actionsSecondary={actionsSecondaryMenuOne}
+                    value={assetValue}
+                    selected={includes(selectedValues, assetValue)}
                 />
                 <Card.Body>
                    {assetValue.index_description}
                 </Card.Body>
                 <Card.Footer>
-                    <Button appearance="primary">Select</Button>
+                    <NavigationProvider onClick={handleClick}>
+                    <Button  to={`view-asset?key=${assetValue._key}`}  openInNewContext>Details</Button>
+                    </NavigationProvider>
                 </Card.Footer>
+
             </Card>
 
     ));
@@ -158,9 +151,8 @@ const HomeDashboardReact = () => {
             }}
             endAdornment={
                 <>
-                <StyledButton to="http://duckduckgo.com"
-                openInNewContext
-                onClick={SearchInputChange}
+                <StyledButton
+                 onClick={SearchInputChange}
                  appearance="pill"
                  icon={<Search />} />
                 </>

@@ -12,8 +12,8 @@ import SplunkThemeProvider from '@splunk/themes/SplunkThemeProvider';
 import Menu from '@splunk/react-ui/Menu';
 
 // Custom Function imports
-import { StyledContainer, StyledGreeting, NotificationBox } from './AssetRegistryReactStyles';
-import { updateKVStore,searchKVStore,insertKVStore } from './ManageKVStore';
+import { NotificationBox } from './AssetRegistryReactStyles';
+import { searchKVStore,insertKVStore } from './ManageKVStore';
 import { validateAssetRegistryFormInput } from './FormValidate'
 
 
