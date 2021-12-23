@@ -33,7 +33,7 @@ function  ViewAssetRegistryReact () {
     })
 
     const [infoMessage, setInfoMessage] = useState({ visible: false });
-    const [open, setOpen] = useState([{open:true,defaultOpen:true}]);
+    const [open, setOpen] = useState([]);
     const [formErrors, setFormErrors] = useState({});
     //const [isSubmit, setIsSubmit] = useState(false);
     // const [isSubmitDisabled, setisSubmitDisabled] = useState(true);
@@ -88,6 +88,9 @@ function  ViewAssetRegistryReact () {
 
       useEffect(() => {
         let queries = queryString.parse(location.search)
+        var openPanel = [1,2,3,4];
+        //setOpen(open.concat(0));
+        setOpen(open.concat(openPanel));
         //console.log(queries);
         //onsole.log(queries.key);
         const defaultErrorMsg = 'There is some error in data retrival, please try again or refresh this page';
@@ -271,14 +274,6 @@ function  ViewAssetRegistryReact () {
                                 onChange={handleDateChange}
                                 error={formErrors.index_created_date_Invalid} />
                         </ControlGroup>
-                        {/* <ControlGroup label="AGS Entitlement Name" tooltip="Provide the AGS Entitlement Name, if not available then enter TBC or NA" help={formErrors.ags_entitlement_name_error}>
-                            <Text
-                                name="ags_entitlement_name"
-                                placeholder="AGS Entitlement Name"
-                                value={FormInputvalues.ags_entitlement_name}
-                                onChange={handleInputChange}
-                                error={formErrors.ags_entitlement_name_Invalid} />
-                        </ControlGroup> */}
                         <ControlGroup label="Role Name" tooltip="Splunk Role Name" help={formErrors.splunk_role_name_error}>
                             <Text
                                 name="splunk_role_name"

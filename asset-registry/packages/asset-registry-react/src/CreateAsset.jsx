@@ -1,5 +1,5 @@
 import React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Button from '@splunk/react-ui/Button';
 import Message from '@splunk/react-ui/Message';
 import Text from '@splunk/react-ui/Text';
@@ -9,7 +9,7 @@ import Date from '@splunk/react-ui/Date';
 import CollapsiblePanel from '@splunk/react-ui/CollapsiblePanel';
 import { includes, without } from 'lodash';
 import SplunkThemeProvider from '@splunk/themes/SplunkThemeProvider';
-import Menu from '@splunk/react-ui/Menu';
+
 
 // Custom Function imports
 import { NotificationBox } from './AssetRegistryReactStyles';
@@ -32,7 +32,7 @@ function  AssetRegistryReact () {
     })
 
     const [infoMessage, setInfoMessage] = useState({ visible: false });
-    const [open, setOpen] = useState([{open:true,defaultOpen:true}]);
+    const [open, setOpen] = useState([]);
     const [formErrors, setFormErrors] = useState({});
     //const [isSubmit, setIsSubmit] = useState(false);
     // const [isSubmitDisabled, setisSubmitDisabled] = useState(true);
@@ -61,6 +61,7 @@ function  AssetRegistryReact () {
 
     const handleRequestOpen = ({ panelId }) => {
             setOpen(open.concat(panelId));
+            console.log(open);
     };
 
 
@@ -85,13 +86,16 @@ function  AssetRegistryReact () {
 
       };
 
-    // useEffect(() => {
+     useEffect(() => {
+        var openPanel = [1,2,3,4];
+        //setOpen(open.concat(0));
+        setOpen(open.concat(openPanel));
     //    console.log(formErrors);
     //    if (Object.keys(formErrors).length === 0 && (isSubmit) ){
     //        console.log(FormInputvalues);
     //        setIsSubmit(true)
     //    }
-    // },[formErrors])
+    },[formErrors])
 
     function handleSubmit(event) {
         event.preventDefault();
