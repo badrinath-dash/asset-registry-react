@@ -3,10 +3,14 @@ import { createRESTURL } from '@splunk/splunk-utils/url';
 import { handleError, handleResponse } from '@splunk/splunk-utils/fetch';
 
 
-function insertKVStore(collection, data, defaultErrorMsg) {
-    const url = createRESTURL(
-        `storage/collections/data/${collection}/`, { app: config.app, sharing: 'app' }
-    );
+function insertKVStore(collection, key, data, defaultErrorMsg) {
+     let url = [];
+    console.log(key);
+    if (!key) {
+        url = createRESTURL(`storage/collections/data/${collection}`, { app: config.app, sharing: 'app' });
+    } else {
+        url = (createRESTURL(`storage/collections/data/${collection}/${encodeURIComponent(key)}`, { app: config.app, sharing: 'app' }));
+    }
     return fetch(url, {
             method: 'POST',
             credentials: 'include',

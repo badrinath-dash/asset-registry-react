@@ -9,9 +9,11 @@ import Date from '@splunk/react-ui/Date';
 import CollapsiblePanel from '@splunk/react-ui/CollapsiblePanel';
 import { includes, without } from 'lodash';
 import SplunkThemeProvider from '@splunk/themes/SplunkThemeProvider';
-import queryString from 'query-string'
+import queryString from 'query-string';
+import Select from '@splunk/react-ui/Select';
+import Switch from '@splunk/react-ui/Switch';
 // Custom Function imports
-import { searchKVStore,insertKVStore } from './ManageKVStore';
+import { searchKVStore,insertKVStore,updateKVStore } from './ManageKVStore';
 import { validateAssetRegistryFormInput } from './FormValidate'
 
 
@@ -29,21 +31,14 @@ function  ViewAssetRegistryReact () {
         ability_app_name:'',
         splunk_role_name:'',
         index_size_mb:'100',
+        index_created_by:'',
         _key:''
     })
 
     const [infoMessage, setInfoMessage] = useState({ visible: false });
     const [open, setOpen] = useState([]);
+    const [inputDisabled, setinputDisabled] = useState(false);
     const [formErrors, setFormErrors] = useState({});
-    //const [isSubmit, setIsSubmit] = useState(false);
-    // const [isSubmitDisabled, setisSubmitDisabled] = useState(true);
-    // const [indexInputDisabled, setindexInputDisabled] = useState(false);
-
-
-    //const [formInputValid, setFormInputValid] = useState({
-    //    index_name_valid:false
-    //});
-
 
 
     const handleMessageRemove = () => {
@@ -54,6 +49,10 @@ function  ViewAssetRegistryReact () {
 
     const handleDateChange = (event, {value}) => {
         setFormInputValues({ index_created_date: value });
+    };
+
+    const handleDropDownChange = (event, {value}) => {
+        setFormInputValues({ index_created_by: value });
     };
 
     const handleRequestClose = ({ panelId }) => {
@@ -70,6 +69,15 @@ function  ViewAssetRegistryReact () {
         setFormInputValues({...FormInputvalues, [name]: value})
     }
 
+    const handleEdit = (event) => {
+        event.preventDefault();
+        setinputDisabled(false);
+    }
+
+    function refreshPage() {
+    window.location.reload(false);
+   }
+
     const clearState = () => {
         setFormInputValues({ index_name: '',
         index_description: '',
@@ -79,8 +87,8 @@ function  ViewAssetRegistryReact () {
         ability_app_name:'',
         splunk_role_name:'',
         index_size_mb:'100',
+        index_created_by:'1',
         _key:''});
-
 
         setFormErrors ('');
 
@@ -100,23 +108,30 @@ function  ViewAssetRegistryReact () {
                     response.json().then((data) => {
                         console.log(data);
                         setFormInputValues(data);
+                        setinputDisabled(true);
                     });
-                    setTimeout(() => {
                         setInfoMessage({
                             visible: true,
                             type: 'success',
                             message: 'Successfully retrieved the data from SPLUNK KVStore',
                         });
-                    }, 10);
+                    setTimeout(() => {
+                    setInfoMessage({
+                        visible: false,
+                    });
+                }, 1000);
                 } else {
                     //setAssetValues(response.json);
-                    setTimeout(() => {
                         setInfoMessage({
                             visible: true,
                             type: 'error',
                             message: 'Error in data Retrival from SPLUNK KVStore, please refresh the page',
                         });
-                    }, 1000);
+                    setTimeout(() => {
+                    setInfoMessage({
+                        visible: false,
+                    });
+                }, 1000);
                 }
             })
             .catch((defaultErrorMsg) => {
@@ -129,13 +144,14 @@ function  ViewAssetRegistryReact () {
     }, []);
 
     function handleSubmit(event) {
+        let queries = queryString.parse(location.search)
         event.preventDefault();
         const defaultErrorMsg = 'Error updating row. Please try again.';
         const InputformErrors = validateAssetRegistryFormInput(FormInputvalues);
         setFormErrors (InputformErrors);
 
         if (Object.keys(InputformErrors).length === 0) {
-            insertKVStore('asset_registry_collection', FormInputvalues, defaultErrorMsg)
+            updateKVStore('asset_registry_collection',  queries.key,FormInputvalues, defaultErrorMsg)
             .then((response) => {
                 console.log(response);
                 if (response.ok){
@@ -145,7 +161,7 @@ function  ViewAssetRegistryReact () {
                     type: 'success',
                     message: 'Row successfully updated',
                 });
-                clearState();
+               refreshPage();
             }
             else {
                 setInfoMessage({
@@ -180,6 +196,11 @@ function  ViewAssetRegistryReact () {
                     type: 'error',
                     message: 'There is alredy an entry exist for this index',
                 });
+                setTimeout(() => {
+                    setInfoMessage({
+                        visible: false,
+                    });
+                }, 1000);
             }
             else {
                 // setisSubmitDisabled(false)
@@ -211,6 +232,7 @@ function  ViewAssetRegistryReact () {
     return (
         <form>
                 <SplunkThemeProvider family="prisma" colorScheme="light" density="comfortable">
+
                     {infoMessage.visible && (
                         <Message style={{ background: '#c3cbd4' }}
                             appearance="fill"
@@ -235,8 +257,10 @@ function  ViewAssetRegistryReact () {
                                 name="index_name"
                                 onChange={handleInputChange}
                                 value={FormInputvalues.index_name}
-                                error={formErrors.index_name_Invalid} />
+                                error={formErrors.index_name_Invalid}
+                                disabled={inputDisabled} />
                             <Button
+                                disabled
                                 label="Check"
                                 appearance="primary"
                                 type="submit"
@@ -252,7 +276,8 @@ function  ViewAssetRegistryReact () {
                                 onChange={handleInputChange}
                                 value={FormInputvalues.index_description}
                                 placeholder="e.g. This index contains << application | Security | Privacy | Sensitive >> data for OneSplunk Application"
-                                error={formErrors.index_description_Invalid} />
+                                error={formErrors.index_description_Invalid}
+                                disabled={inputDisabled}/>
                         </ControlGroup>
                         <ControlGroup label="Index Type" help={formErrors.index_type_error}>
                             <RadioList
@@ -260,6 +285,7 @@ function  ViewAssetRegistryReact () {
                                 value={FormInputvalues.index_type}
                                 onChange={handleInputChange}
                                 error={formErrors.index_type_Invalid}
+                                disabled={inputDisabled}
                             >
                                 <RadioList.Option value="Event">Event</RadioList.Option>
                                 <RadioList.Option value="Summary">Summary Event</RadioList.Option>
@@ -272,7 +298,9 @@ function  ViewAssetRegistryReact () {
                                 name="index_created_date"
                                 value={FormInputvalues.index_created_date}
                                 onChange={handleDateChange}
-                                error={formErrors.index_created_date_Invalid} />
+                                error={formErrors.index_created_date_Invalid}
+                                 disabled={inputDisabled}
+                               />
                         </ControlGroup>
                         <ControlGroup label="Role Name" tooltip="Splunk Role Name" help={formErrors.splunk_role_name_error}>
                             <Text
@@ -280,36 +308,63 @@ function  ViewAssetRegistryReact () {
                                 placeholder="splunk role name"
                                 value={FormInputvalues.splunk_role_name}
                                 onChange={handleInputChange}
-                                error={formErrors.splunk_role_name_Invalid} />
+                                error={formErrors.splunk_role_name_Invalid}
+                                disabled={inputDisabled} />
                         </ControlGroup>
                         <ControlGroup label="Ability App Name" tooltip="Ability App Name">
                             <Text
                                 name="ability_app_name"
                                 placeholder="Ability App name"
                                 value={FormInputvalues.ability_app_name}
-                                onChange={handleInputChange} />
+                                onChange={handleInputChange}
+                                disabled={inputDisabled} />
                         </ControlGroup>
                     </CollapsiblePanel>
                     <CollapsiblePanel
-                        title="Index Retention Overview"
+                       title="Index Retentention Overview"
                         onRequestClose={handleRequestClose}
                         onRequestOpen={handleRequestOpen}
                         open={includes(open, 2)}
-                        description="Index Retention Details"
+                        description="Basic details of the index"
                         panelId={2}
                     >
                         <ControlGroup label="Index Size Per day in MB" tooltip="Index Size Per day" help={formErrors.index_size_mb_error}>
                             <Text
                                 name="index_size_mb"
-                                inline
                                 placeholder="Index Size in MB"
                                 startAdornment={<div style={{ padding: '0 8px' }}>MB</div>}
                                 value={FormInputvalues.index_size_mb}
                                 onChange={handleInputChange}
-                                error={formErrors.index_size_mb_Invalid} />
+                                error={formErrors.index_size_mb_Invalid}
+                                disabled={inputDisabled}
+                                />
+                        </ControlGroup>
+<ControlGroup label="Index Created By" tooltip="Index Created By" help={formErrors.index_created_by_error}>
+                <Select
+                name="index_created_by"
+                value={FormInputvalues.index_created_by}
+                onChange={handleDropDownChange}
+                error={formErrors.index_created_by_Invalid}
+                disabled={inputDisabled}>
+
+                <Select.Option label="Abhiradh Naidu" value="Abhiradh.Naidu@team.telstra.com" />
+                <Select.Option label="Andrew Garde" value="Andrew.Garde@team.telstra.com" />
+                <Select.Option label="Angelus Sunith" value="Angelus.Sunith@team.telstra.com" />
+                <Select.Option label="Badri Dash" value="Badri.Dash@team.telstra.com" />
+                <Select.Option label="Bismaya Pattanaik" value="Bismaya.Pattanayak@team.telstra.com" />
+                <Select.Option label="Feroz Faruk Basha" value="Feroz.Basha@team.telstra.com" />
+                <Select.Option label="Gareth Anderson" value="Gareth.Anderson@team.telstra.com" />
+                <Select.Option label="Jay Regunathan" value="Jay.Regunathan@team.telstra.com" />
+                <Select.Option label="Lucas Khoo" value="Lucas.khoo@team.telstra.com" />
+                <Select.Option label="Mike O'Neill" value="Michael.ONeill@team.telstra.com" />
+                <Select.Option label="Murali Jaganathan" value="Muralidharan.Jaganathan@team.telstra.com" />
+                 <Select.Option label="Purani Mahendran" value="Purani.Mahendran@team.telstra.com" />
+                <Select.Option label="Shyam Kosanam" value="Shyam.Kosanam@team.telstra.com" />
+            </Select>
                         </ControlGroup>
                     </CollapsiblePanel>
-                    <Button label="Submit" appearance="primary" type="submit" value="Submit" onClick={handleSubmit} />
+                    <Button label="Save" appearance="primary" type="submit" value="Submit" onClick={handleSubmit} />
+                     <Button label="Edit" appearance="primary" type="edit" value="Edit" onClick={handleEdit}> </Button>
                 </SplunkThemeProvider>
             </form>
         );

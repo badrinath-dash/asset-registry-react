@@ -29,6 +29,10 @@ function validateAssetRegistryFormInput(values) {
         errors.index_size_mb_error = "Index Size is required"
         errors.index_size_mb_Invalid = true;
     }
+    if (!values.index_created_by) {
+        errors.index_created_by_error = "Index Created by is required";
+        errors.index_created_by_Invalid = true;
+    }
 
     return errors
 }

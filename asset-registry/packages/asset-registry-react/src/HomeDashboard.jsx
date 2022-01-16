@@ -11,6 +11,7 @@ import Clone from '@splunk/react-icons/Clone';
 import Remove from '@splunk/react-icons/Remove';
 import Search from '@splunk/react-icons/Search';
 import Text from '@splunk/react-ui/Text';
+import Paginator from '@splunk/react-ui/Paginator';
 import {
     Redirect,
     BrowserRouter as Router,
@@ -29,8 +30,7 @@ const HomeDashboardReact = () => {
     const [infoMessage, setInfoMessage] = useState({ visible: false });
     const [assetValues, setAssetValues] = useState([]);
     const [searchTerm, setSearchTerm] = useState([]);
-    const [indexName, setIndexName] = useState([]);
-
+     
 
     const handleMessageRemove = () => {
         setInfoMessage({ visible: false });
@@ -52,6 +52,11 @@ const HomeDashboardReact = () => {
                         type: 'success',
                         message: 'Data Retrival from KVStore',
                     });
+                    setTimeout(() => {
+                    setInfoMessage({
+                        visible: false,
+                    });
+                }, 1000);
                 } else {
                     //setAssetValues(response.json);
                     setInfoMessage({
@@ -78,7 +83,7 @@ const HomeDashboardReact = () => {
             <Menu.Item icon={<Refresh />}>Ability</Menu.Item>
             <Menu.Divider />
             <Menu.Item icon={<Clone />}>POW</Menu.Item>
-            <Menu.Item icon={<Clone />}  to={`/view-asset/${assetValues.index_name}`} openInNewContext>Edit</Menu.Item>
+            
             <Menu.Item icon={<Remove />}>Delete</Menu.Item>
         </Menu>
     );
@@ -162,11 +167,13 @@ const HomeDashboardReact = () => {
             />
 
             <SplunkThemeProvider family="prisma" colorScheme="light" density="comfortable">
+             
                 <div>
                     <CardLayout cardWidth={250} gutterSize={15}  alignCards="left">
                     {Cards}
                     </CardLayout>
                     </div>
+             
             </SplunkThemeProvider>
         </div>
     );
