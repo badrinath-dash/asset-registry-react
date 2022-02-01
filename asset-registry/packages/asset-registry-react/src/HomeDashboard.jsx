@@ -11,6 +11,7 @@ import Clone from '@splunk/react-icons/Clone';
 import Remove from '@splunk/react-icons/Remove';
 import Search from '@splunk/react-icons/Search';
 import Text from '@splunk/react-ui/Text';
+import Plus from '@splunk/react-icons/Plus';
 import Paginator from '@splunk/react-ui/Paginator';
 import {
     Redirect,
@@ -30,7 +31,7 @@ const HomeDashboardReact = () => {
     const [infoMessage, setInfoMessage] = useState({ visible: false });
     const [assetValues, setAssetValues] = useState([]);
     const [searchTerm, setSearchTerm] = useState([]);
-     
+
 
     const handleMessageRemove = () => {
         setInfoMessage({ visible: false });
@@ -40,7 +41,7 @@ const HomeDashboardReact = () => {
 
     useEffect(() => {
         const defaultErrorMsg = 'There is some error in data retrival, please try again or refresh this page';
-        searchKVStore('asset_registry_collection', '', defaultErrorMsg)
+        searchKVStore('asset_registry_collection', '', '',defaultErrorMsg)
             .then((response) => {
                 if (response.ok) {
                     response.json().then((data) => {
@@ -83,7 +84,7 @@ const HomeDashboardReact = () => {
             <Menu.Item icon={<Refresh />}>Ability</Menu.Item>
             <Menu.Divider />
             <Menu.Item icon={<Clone />}>POW</Menu.Item>
-            
+
             <Menu.Item icon={<Remove />}>Delete</Menu.Item>
         </Menu>
     );
@@ -165,15 +166,16 @@ const HomeDashboardReact = () => {
             inline
             placeholder="Enter index name to search"
             />
+             <Button icon={<Plus screenReaderText={null} />} label="Add New Asset"  to={`view-asset?key=`}  openInNewContext/>
 
             <SplunkThemeProvider family="prisma" colorScheme="light" density="comfortable">
-             
+
                 <div>
                     <CardLayout cardWidth={250} gutterSize={15}  alignCards="left">
                     {Cards}
                     </CardLayout>
                     </div>
-             
+
             </SplunkThemeProvider>
         </div>
     );

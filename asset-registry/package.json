@@ -28,7 +28,9 @@
         "react-generic-tile": "^1.0.5",
         "react-hook-form": "^7.20.2",
         "react-router-dom": "^6.1.1",
+        "react-vertical-timeline-component": "^3.5.2",
         "styled-components": "^5.3.3",
+        "vertical-timeline-reactjs": "^1.0.7",
         "yup": "^0.32.11"
     }
 }

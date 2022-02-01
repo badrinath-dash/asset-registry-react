@@ -4,7 +4,7 @@ import { handleError, handleResponse } from '@splunk/splunk-utils/fetch';
 
 
 function insertKVStore(collection, key, data, defaultErrorMsg) {
-     let url = [];
+    let url = [];
     console.log(key);
     if (!key) {
         url = createRESTURL(`storage/collections/data/${collection}`, { app: config.app, sharing: 'app' });
@@ -59,11 +59,14 @@ function updateKVStore(collection, key, data, defaultErrorMsg) {
         .catch((err) => (err instanceof Object ? defaultErrorMsg : err)); // handleError sometimes returns an Object
 }
 
-function searchKVStore(collection, key, defaultErrorMsg) {
+function searchKVStore(collection, key, params, defaultErrorMsg) {
     let url = [];
     console.log(key);
     if (!key) {
         url = createRESTURL(`storage/collections/data/${collection}`, { app: config.app, sharing: 'app' });
+    }
+    if (params) {
+        url = createRESTURL(`storage/collections/data/${collection}?query=${encodeURIComponent(params)}`, { app: config.app, sharing: 'app' });
     } else {
         url = (createRESTURL(`storage/collections/data/${collection}/${encodeURIComponent(key)}`, { app: config.app, sharing: 'app' }));
     }
