@@ -7,11 +7,12 @@ const StyledContainer = styled.div `
     font-size: ${variables.fontSizeLarge};
     line-height: 200%;
     margin: calc(${variables.spacing} * 2) calc(${variables.spacing} * 2);
+background:'#0b0c0e';
 `;
 
 const StyledGreeting = styled.div `
     font-weight: bold;
-    color: ${variables.infoColor};
+
     font-size: ${variables.fontSizeXXLarge};
 `;
 

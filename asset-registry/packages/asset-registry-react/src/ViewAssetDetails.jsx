@@ -14,15 +14,12 @@ import queryString from 'query-string';
 import Select from '@splunk/react-ui/Select';
 import Multiselect from '@splunk/react-ui/Multiselect';
 import SidePanel from '@splunk/react-ui/SidePanel';
-import { VerticalTimeline, VerticalTimelineElement }  from 'react-vertical-timeline-component';
-//import 'react-vertical-timeline-component/style.min.css';
-
-
+import {Timeline, TimelineEvent} from 'react-event-timeline'
 
 
 // Custom Function imports
 import { searchKVStore, updateKVStore } from './ManageKVStore';
-import { IndexClusterDropDownOptions, ArchitectDropDownOptions} from './DropDownData';
+import { IndexClusterDropDownOptions, ArchitectDropDownOptions, data} from './DropDownData';
 import { validateAssetRegistryFormInput } from './FormValidate';
 
 function ViewAssetRegistryReact() {
@@ -61,6 +58,7 @@ function ViewAssetRegistryReact() {
     const handleChangePanelSize = (e, { value }) => {
         setPanelSize(value);
     };
+
 
     const [infoMessage, setInfoMessage] = useState({ visible: false });
     const [open, setOpen] = useState([]);
@@ -322,7 +320,7 @@ function ViewAssetRegistryReact() {
                     </Message>
                 )}
                 <TabLayout activePanelId={activePanelId} onChange={handleTabChange}>
-                <TabLayout.Panel label="One" panelId="one" style={{ margin: 20 }}>
+                <TabLayout.Panel label="Index OverView" panelId="one" style={{ margin: 20 }}>
                 <CollapsiblePanel
                     title="Index Overview"
                     onRequestClose={handleRequestClose}
@@ -619,99 +617,90 @@ function ViewAssetRegistryReact() {
                     </ControlGroup>
                 </CollapsiblePanel>
                 </TabLayout.Panel>
-                <TabLayout.Panel label="Two" panelId="two" style={{ margin: 20 }}>
-                <VerticalTimeline>
-                <VerticalTimelineElement
-    className="vertical-timeline-element--work"
-    contentStyle={{ background: 'rgb(33, 150, 243)', color: '#fff' }}
-    contentArrowStyle={{ borderRight: '7px solid  rgb(33, 150, 243)' }}
-    date="2011 - present"
-    iconStyle={{ background: 'rgb(33, 150, 243)', color: '#fff' }}
+                <TabLayout.Panel label="Index History" panelId="two" style={{ margin: 20 }}>
+                <Timeline>
+            <TimelineEvent title="Bismaya Pattanaik"
+            titleStyle={{ fontWeight: "bold" }}
+                           createdAt="2022-01-02 10:06 PM"
+                           style={{ fontSize: "100%" }}
 
-  >
-    <h3 className="vertical-timeline-element-title">Creative Director</h3>
-    <h4 className="vertical-timeline-element-subtitle">Miami, FL</h4>
-    <p>
-      Creative Direction, User Experience, Visual Design, Project Management, Team Leading
-    </p>
-  </VerticalTimelineElement>
-  <VerticalTimelineElement
-    className="vertical-timeline-element--work"
-    date="2010 - 2011"
-    iconStyle={{ background: 'rgb(33, 150, 243)', color: '#fff' }}
 
-  >
-    <h3 className="vertical-timeline-element-title">Art Director</h3>
-    <h4 className="vertical-timeline-element-subtitle">San Francisco, CA</h4>
-    <p>
-      Creative Direction, User Experience, Visual Design, SEO, Online Marketing
-    </p>
-  </VerticalTimelineElement>
-  <VerticalTimelineElement
-    className="vertical-timeline-element--work"
-    date="2008 - 2010"
-    iconStyle={{ background: 'rgb(33, 150, 243)', color: '#fff' }}
 
-  >
-    <h3 className="vertical-timeline-element-title">Web Designer</h3>
-    <h4 className="vertical-timeline-element-subtitle">Los Angeles, CA</h4>
-    <p>
-      User Experience, Visual Design
-    </p>
-  </VerticalTimelineElement>
-  <VerticalTimelineElement
-    className="vertical-timeline-element--work"
-    date="2006 - 2008"
-    iconStyle={{ background: 'rgb(33, 150, 243)', color: '#fff' }}
+            >
+                Index Size Increased from 100 GB to 200 GB
+            </TimelineEvent>
+            <TimelineEvent
+                title="System Modified"
+                createdAt="2021-09-11 09:06 AM"
+                style={{ fontSize: "100%" }}
 
-  >
-    <h3 className="vertical-timeline-element-title">Web Designer</h3>
-    <h4 className="vertical-timeline-element-subtitle">San Francisco, CA</h4>
-    <p>
-      User Experience, Visual Design
-    </p>
-  </VerticalTimelineElement>
-  <VerticalTimelineElement
-    className="vertical-timeline-element--education"
-    date="April 2013"
-    iconStyle={{ background: 'rgb(233, 30, 99)', color: '#fff' }}
 
-  >
-    <h3 className="vertical-timeline-element-title">Content Marketing for Web, Mobile and Social Media</h3>
-    <h4 className="vertical-timeline-element-subtitle">Online Course</h4>
-    <p>
-      Strategy, Social Media
-    </p>
-  </VerticalTimelineElement>
-  <VerticalTimelineElement
-    className="vertical-timeline-element--education"
-    date="November 2012"
-    iconStyle={{ background: 'rgb(233, 30, 99)', color: '#fff' }}
+            >
+                Index Size Increased from 10 GB to 100 GB
+            </TimelineEvent>
+            <TimelineEvent
+                title="System Modified"
+                createdAt="2021-09-11 09:06 AM"
+                style={{ fontSize: "100%" }}
 
-  >
-    <h3 className="vertical-timeline-element-title">Agile Development Scrum Master</h3>
-    <h4 className="vertical-timeline-element-subtitle">Certification</h4>
-    <p>
-      Creative Direction, User Experience, Visual Design
-    </p>
-  </VerticalTimelineElement>
-  <VerticalTimelineElement
-    className="vertical-timeline-element--education"
-    date="2002 - 2006"
-    iconStyle={{ background: 'rgb(233, 30, 99)', color: '#fff' }}
 
-  >
-    <h3 className="vertical-timeline-element-title">Bachelor of Science in Interactive Digital Media Visual Imaging</h3>
-    <h4 className="vertical-timeline-element-subtitle">Bachelor Degree</h4>
-    <p>
-      Creative Direction, Visual Design
-    </p>
-  </VerticalTimelineElement>
-  <VerticalTimelineElement
-    iconStyle={{ background: 'rgb(16, 204, 82)', color: '#fff' }}
+            >
+                Index Size Increased from 10 GB to 100 GB
+            </TimelineEvent>
+            <TimelineEvent
+                title="System Modified"
+                createdAt="2021-09-11 09:06 AM"
+                style={{ fontSize: "100%" }}
 
-  />
-</VerticalTimeline>
+            >
+                Index Size Increased from 10 GB to 100 GB
+            </TimelineEvent>
+            <TimelineEvent
+                title="System Modified"
+                createdAt="2021-09-11 09:06 AM"
+                style={{ fontSize: "100%" }}
+
+
+            >
+                Index Size Increased from 10 GB to 100 GB
+            </TimelineEvent>
+            <TimelineEvent
+                title="System Modified"
+                createdAt="2021-09-11 09:06 AM"
+                style={{ fontSize: "100%" }}
+
+
+            >
+                Index Size Increased from 10 GB to 100 GB
+            </TimelineEvent>
+            <TimelineEvent
+                title="System Modified"
+                createdAt="2021-09-11 09:06 AM"
+                style={{ fontSize: "100%" }}
+
+
+            >
+                Index Size Increased from 10 GB to 100 GB
+            </TimelineEvent>
+            <TimelineEvent
+                title="System Modified"
+                createdAt="2021-09-11 09:06 AM"
+                style={{ fontSize: "100%" }}
+
+
+            >
+                Index Size Increased from 10 GB to 100 GB
+            </TimelineEvent>
+            <TimelineEvent
+                title="System Modified"
+                createdAt="2021-09-11 09:06 AM"
+                style={{ fontSize: "100%" }}
+
+
+            >
+                Index Size Increased from 10 GB to 100 GB
+            </TimelineEvent>
+    </Timeline>
 </TabLayout.Panel>
 </TabLayout>
 

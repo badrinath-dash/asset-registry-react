@@ -4348,11 +4348,6 @@
     "isobject" "^3.0.0"
     "static-extend" "^0.1.1"
 
-"classnames@^2.2.6":
-  "integrity" "sha512-OlQdbZ7gLfGarSqxesMesDa5uz7KFbID8Kpq/SxIoNGDqY8lSYs0D+hhtBXhcdB3rcbXArFr7vlHheLk1voeNA=="
-  "resolved" "https://registry.npmjs.org/classnames/-/classnames-2.3.1.tgz"
-  "version" "2.3.1"
-
 "clean-css@4.2.x":
   "integrity" "sha512-EJUDT7nDVFDvaQgAo2G/PJvxmp1o/c6iXLbswsBbUFXi1Nr+AjA2cKmfbKDMjMvzEe75g3P6JkaDDAKk96A85A=="
   "resolved" "https://registry.npmjs.org/clean-css/-/clean-css-4.2.4.tgz"
@@ -11543,6 +11538,13 @@
     "prop-types" "^15.6.0"
     "warning" "^4.0.1"
 
+"react-event-timeline@^1.6.3":
+  "integrity" "sha512-hMGhC9/Xx3sPF/TSlMCA13hZm/2c5CvBxbkDM7bQ4yq6VJ6AmhjqKPnU6/3nVmWUGpK3YqhHb95OiqulxVD3Eg=="
+  "resolved" "https://registry.npmjs.org/react-event-timeline/-/react-event-timeline-1.6.3.tgz"
+  "version" "1.6.3"
+  dependencies:
+    "prop-types" "^15.6.0"
+
 "react-full-screen@^1.0.2":
   "integrity" "sha512-ivL/HrcfHhEUJWmgoiDKP7Xfy127LGz9x3VnwVxljJ0ky1D1YqJmXjhxnuEhfqT3yociJy/HCk9/yyJ3HEAjaw=="
   "resolved" "https://registry.npmjs.org/react-full-screen/-/react-full-screen-1.1.0.tgz"
@@ -11571,11 +11573,6 @@
   "version" "3.11.0"
   dependencies:
     "camelcase" "^5.0.0"
-
-"react-intersection-observer@^8.26.2":
-  "integrity" "sha512-3v+qaJvp3D1MlGHyM+KISVg/CMhPiOlO6FgPHcluqHkx4YFCLuyXNlQ/LE6UkbODXlQcLOppfX6UMxCEkUhDLw=="
-  "resolved" "https://registry.npmjs.org/react-intersection-observer/-/react-intersection-observer-8.33.1.tgz"
-  "version" "8.33.1"
 
 "react-is@^16.12.0", "react-is@^16.13.1", "react-is@^16.3.1", "react-is@^16.7.0", "react-is@^16.8.1", "react-is@^16.8.4", "react-is@^16.8.6", "react-is@>= 16.8.0":
   "integrity" "sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ=="
@@ -11680,16 +11677,7 @@
     "react-is" "^16.8.6"
     "scheduler" "^0.19.1"
 
-"react-vertical-timeline-component@^3.5.2":
-  "integrity" "sha512-Wcb85NUvmygLFF45bfxVGU4AyHOBjdQY9IqB8uLG1jXWvIthkQft1ZJOGirIlYHSYnDl9sOs8ItL1sNtqA7GUg=="
-  "resolved" "https://registry.npmjs.org/react-vertical-timeline-component/-/react-vertical-timeline-component-3.5.2.tgz"
-  "version" "3.5.2"
-  dependencies:
-    "classnames" "^2.2.6"
-    "prop-types" "^15.7.2"
-    "react-intersection-observer" "^8.26.2"
-
-"react@*", "react@^0.14 || ^15.0.0 || ^16.0.0-alpha", "react@^0.14.0 || ^15.0.0 || ^16.0.0", "react@^0.14.0 || ^15.0.0-0 || ^16.0.0-0", "react@^15.0.0 || ^16.0.0 || ^17.0.0", "react@^15.0.0 || ^16.0.0 || ^17.0.0|| ^18.0.0", "react@^16.0.0", "react@^16.0.0-0", "react@^16.10.0", "react@^16.11.0", "react@^16.12.0", "react@^16.14.0", "react@^16.3.0", "react@^16.8", "react@^16.8.0  || ^17.0.0", "react@^16.8.0 || ^17", "react@^16.8.3 || ^17", "react@^16.9.0 || ^17.0.0 || 18.0.0-beta", "react@>= 0.14.0 < 17.0.0-0", "react@>= 16.8.0", "react@>=0.14.0", "react@>=16.11", "react@>=16.8", "react@0.13.x || 0.14.x || ^15.0.0-0 || ^16.0.0-0", "react@15.x || 16.x", "react@16.x":
+"react@*", "react@^0.14 || ^15.0.0 || ^16.0.0-alpha", "react@^0.14.0 || ^15.0.0 || ^16.0.0", "react@^0.14.0 || ^15.0.0-0 || ^16.0.0-0", "react@^15.0.0 || ^16.0.0 || ^17.0.0", "react@^16.0.0", "react@^16.0.0-0", "react@^16.10.0", "react@^16.11.0", "react@^16.12.0", "react@^16.14.0", "react@^16.3.0", "react@^16.8", "react@^16.8.0  || ^17.0.0", "react@^16.8.0 || ^17", "react@^16.8.3 || ^17", "react@^16.9.0 || ^17.0.0 || 18.0.0-beta", "react@>= 0.14.0 < 17.0.0-0", "react@>= 16.8.0", "react@>=0.14.0", "react@>=16.11", "react@>=16.8", "react@0.13.x || 0.14.x || ^15.0.0-0 || ^16.0.0-0", "react@15.x || 16.x", "react@16.x":
   "integrity" "sha512-0X2CImDkJGApiAlcf0ODKIneSwBPhqJawOa5wCtKbu7ZECrmS26NvtSILynQ66cgkT/RJ4LidJOc3bUESwmU8g=="
   "resolved" "https://registry.npmjs.org/react/-/react-16.14.0.tgz"
   "version" "16.14.0"

@@ -12,7 +12,10 @@ import Remove from '@splunk/react-icons/Remove';
 import Search from '@splunk/react-icons/Search';
 import Text from '@splunk/react-ui/Text';
 import Plus from '@splunk/react-icons/Plus';
+import Select from '@splunk/react-ui/Select';
+import ControlGroup from '@splunk/react-ui/ControlGroup';
 import Paginator from '@splunk/react-ui/Paginator';
+
 import {
     Redirect,
     BrowserRouter as Router,
@@ -31,13 +34,13 @@ const HomeDashboardReact = () => {
     const [infoMessage, setInfoMessage] = useState({ visible: false });
     const [assetValues, setAssetValues] = useState([]);
     const [searchTerm, setSearchTerm] = useState([]);
+    const [data, setData] = useState([]);
+    const [sortType, setSortType] = useState('index_name');
 
 
     const handleMessageRemove = () => {
         setInfoMessage({ visible: false });
     };
-
-
 
     useEffect(() => {
         const defaultErrorMsg = 'There is some error in data retrival, please try again or refresh this page';
@@ -74,7 +77,9 @@ const HomeDashboardReact = () => {
                     message: defaultErrorMsg,
                 });
             });
-    }, []);
+
+    }, [sortType]);
+
 
 
     const actionPrimary = <Button appearance="secondary" icon={<Pencil hideDefaultTooltip />} />;
@@ -92,6 +97,7 @@ const HomeDashboardReact = () => {
     function SearchInputChange (event) {
         event.preventDefault();
         console.log(searchTerm);
+
     }
 
     function handleCardSelect(event) {
@@ -107,8 +113,13 @@ const HomeDashboardReact = () => {
             window.alert(`In NavigationProvider click handler, to: ${to}`); // eslint-disable-line no-alert
         }
     };
+
+
+
+
+
     const selectedValues = assetValues;
-    const Cards = assetValues.filter((selectedValues) => {
+    const Cards = assetValues.sort((a, b) => b.index_name - a.index_name).filter((selectedValues) => {
         if (searchTerm === ""){
           return selectedValues;
         }if (selectedValues.index_name.toLowerCase().includes(searchTerm)){
@@ -166,16 +177,32 @@ const HomeDashboardReact = () => {
             inline
             placeholder="Enter index name to search"
             />
+
+
+                        <Select
+                           labelText ="Sort"
+                            name="sortby"
+                            onChange= {(event,{ value }) => {
+                                setSortType(value)
+                                console.log(sortType);
+                            }}
+                            value= {sortType}
+                        >
+                         <Select.Option label="Index Name" value="index_name" />
+                         <Select.Option label="AbilityApp Name" value="ability_app_name" />
+                         <Select.Option label="Index Size" value="index_size_mb" />
+                         <Select.Option label="Index Type" value="index_type" />
+                         <Select.Option label="Splunk Role Name" value="splunk_role_name" />
+                        </Select>
+
              <Button icon={<Plus screenReaderText={null} />} label="Add New Asset"  to={`view-asset?key=`}  openInNewContext/>
 
-            <SplunkThemeProvider family="prisma" colorScheme="light" density="comfortable">
-
+            <SplunkThemeProvider family="prisma" colorScheme="light"  density="comfortable">
                 <div>
                     <CardLayout cardWidth={250} gutterSize={15}  alignCards="left">
                     {Cards}
                     </CardLayout>
                     </div>
-
             </SplunkThemeProvider>
         </div>
     );
