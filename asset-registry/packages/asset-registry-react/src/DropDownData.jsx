@@ -28,4 +28,11 @@ export const data = [
     {time: '16:30', title: 'Event 5', description: 'Event 5 Description'}
   ]
 
+  export const SortByOptions = [
+    { label:"Index Name", value:"Shyam.Kosanam@team.telstra.com" },
+    {label:"AbilityApp Name", value:"ability_app_name" },
+    {label:"Index Size", value:"index_size_mb" },
+    {label:"Index Type", value:"index_type" },
+    {label:"Splunk Role Name", value:"splunk_role_name" }
+  ]
 

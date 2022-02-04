@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import SplunkThemeProvider from '@splunk/themes/SplunkThemeProvider';
 import Message from '@splunk/react-ui/Message';
-import Pencil from '@splunk/react-icons/Pencil';
 import Button from '@splunk/react-ui/Button';
 import Card from '@splunk/react-ui/Card';
 import CardLayout from '@splunk/react-ui/CardLayout';
@@ -13,20 +12,15 @@ import Search from '@splunk/react-icons/Search';
 import Text from '@splunk/react-ui/Text';
 import Plus from '@splunk/react-icons/Plus';
 import Select from '@splunk/react-ui/Select';
-import ControlGroup from '@splunk/react-ui/ControlGroup';
 import Paginator from '@splunk/react-ui/Paginator';
-
-import {
-    Redirect,
-    BrowserRouter as Router,
-    Switch,
-    useLocation,
-    useHistory
-  } from "react-router-dom";
-import Clickable, { isInternalLink, NavigationProvider } from '@splunk/react-ui/Clickable';
+import { isInternalLink, NavigationProvider } from '@splunk/react-ui/Clickable';
+//import ControlGroup from '@splunk/react-ui/ControlGroup';
 import { includes, without } from 'lodash';
+
+// Custom Imports inside this react App
 import { searchKVStore } from './ManageKVStore';
 import { StyledButton } from './AssetRegistryReactStyles';
+import { SortByOptions } from './DropDownData';
 
 
 const HomeDashboardReact = () => {
@@ -34,35 +28,41 @@ const HomeDashboardReact = () => {
     const [infoMessage, setInfoMessage] = useState({ visible: false });
     const [assetValues, setAssetValues] = useState([]);
     const [searchTerm, setSearchTerm] = useState([]);
-    const [data, setData] = useState([]);
     const [sortType, setSortType] = useState('index_name');
+    const [currentPage, setCurrentPage] = useState(1);
+    const [postsPerPage, setPostsPerPage] = useState(10);
 
+    // Function to handle Pagination
+    const handlePaginatorChange = (event, { page }) => {
+        setCurrentPage(page);
+    };
 
+    // Function to remove the Error / Success Message on the screen
     const handleMessageRemove = () => {
         setInfoMessage({ visible: false });
     };
 
     useEffect(() => {
-        const defaultErrorMsg = 'There is some error in data retrival, please try again or refresh this page';
-        searchKVStore('asset_registry_collection', '', '',defaultErrorMsg)
+        const defaultErrorMsg =
+            'There is some error in data retrival from SPLUNK KVStore, please try again or refresh this page';
+        searchKVStore('asset_registry_collection', '', '', defaultErrorMsg)
             .then((response) => {
                 if (response.ok) {
                     response.json().then((data) => {
-                        console.log(data);
+                        // console.log(data); Print the data from KVStore
                         setAssetValues(data);
                     });
                     setInfoMessage({
                         visible: true,
                         type: 'success',
-                        message: 'Data Retrival from KVStore',
+                        message: 'Successfully Retrived Data from SPLUNK KVStore',
                     });
                     setTimeout(() => {
-                    setInfoMessage({
-                        visible: false,
-                    });
-                }, 1000);
+                        setInfoMessage({
+                            visible: false,
+                        });
+                    }, 1000);
                 } else {
-                    //setAssetValues(response.json);
                     setInfoMessage({
                         visible: true,
                         type: 'success',
@@ -77,12 +77,9 @@ const HomeDashboardReact = () => {
                     message: defaultErrorMsg,
                 });
             });
+    }, []);
 
-    }, [sortType]);
-
-
-
-    const actionPrimary = <Button appearance="secondary" icon={<Pencil hideDefaultTooltip />} />;
+    // const actionPrimary = <Button appearance="secondary" icon={<Pencil hideDefaultTooltip />} />;
 
     const actionsSecondaryMenuOne = (
         <Menu>
@@ -94,18 +91,17 @@ const HomeDashboardReact = () => {
         </Menu>
     );
 
-    function SearchInputChange (event) {
+    function SearchInputChange(event) {
         event.preventDefault();
         console.log(searchTerm);
-
     }
 
-    function handleCardSelect(event) {
-        //event.preventDefault();
-        console.log(event);
-        // history.push("/view-asset");
-        return  <Redirect  to={`/view-asset/_key=${event}`} />
-    }
+    // function handleCardSelect(event) {
+    //     //event.preventDefault();
+    //     console.log(event);
+    //     // history.push("/view-asset");
+    //     return  <Redirect  to={`/view-asset/_key=${event}`} />
+    // }
 
     const handleClick = (e, { openInNewContext, to }) => {
         if (!openInNewContext && isInternalLink(to)) {
@@ -114,19 +110,26 @@ const HomeDashboardReact = () => {
         }
     };
 
-
-
-
+    const lastpage = Math.ceil(assetValues.length / postsPerPage);
+    const indexOfLastPost = currentPage * postsPerPage;
+    const indexOfFirstPost = indexOfLastPost - postsPerPage;
+    const currentPosts = assetValues
+        .sort((a, b) => (a.index_name > b.index_name ? 1 : -1))
+        .slice(indexOfFirstPost, indexOfLastPost);
 
     const selectedValues = assetValues;
-    const Cards = assetValues.sort((a, b) => b.index_name - a.index_name).filter((selectedValues) => {
-        if (searchTerm === ""){
-          return selectedValues;
-        }if (selectedValues.index_name.toLowerCase().includes(searchTerm)){
-            return selectedValues;
-    }
-    }).map((assetValue) => (
-        <Card key={assetValue._key}>
+    // const Cards = currentPosts.sort((a, b) => a.index_name > b.index_name ? 1:-1).filter((selectedValues) => {
+    const Cards = currentPosts
+        .filter((selectedValues) => {
+            if (searchTerm === '') {
+                return selectedValues;
+            }
+            if (selectedValues.index_name.toLowerCase().includes(searchTerm)) {
+                return selectedValues;
+            }
+        })
+        .map((assetValue) => (
+            <Card key={assetValue._key}>
                 <Card.Header
                     title={assetValue.index_name}
                     subtitle={assetValue.index_size_mb}
@@ -134,18 +137,16 @@ const HomeDashboardReact = () => {
                     value={assetValue}
                     selected={includes(selectedValues, assetValue)}
                 />
-                <Card.Body>
-                   {assetValue.index_description}
-                </Card.Body>
+                <Card.Body>{assetValue.index_description}</Card.Body>
                 <Card.Footer>
                     <NavigationProvider onClick={handleClick}>
-                    <Button  to={`view-asset?key=${assetValue._key}`}  openInNewContext>Details</Button>
+                        <Button to={`view-asset?key=${assetValue._key}`} openInNewContext>
+                            Details
+                        </Button>
                     </NavigationProvider>
                 </Card.Footer>
-
             </Card>
-
-    ));
+        ));
 
     return (
         <div>
@@ -159,50 +160,80 @@ const HomeDashboardReact = () => {
                     {infoMessage.message}
                 </Message>
             )}
+            <br></br>
 
             <Text
-            defaultValue=""
-            name="search_input"
-            onChange= {(event) => {
-                setSearchTerm(event.target.value.toLowerCase())
-            }}
-            endAdornment={
-                <>
-                <StyledButton
-                 onClick={SearchInputChange}
-                 appearance="pill"
-                 icon={<Search />} />
-                </>
-            }
-            inline
-            placeholder="Enter index name to search"
+                style={{ float: 'right', width: '20%' }}
+                defaultValue=""
+                name="search_input"
+                onChange={(event) => {
+                    setSearchTerm(event.target.value.toLowerCase());
+                }}
+                endAdornment={
+                    <>
+                        <StyledButton
+                            onClick={SearchInputChange}
+                            appearance="pill"
+                            icon={<Search />}
+                        />
+                    </>
+                }
+                inline
+                placeholder="Enter index name to search"
+            />
+            <Select
+                prefixLabel="Sort"
+                name="sortby"
+
+                onChange={(event, { value }) => {
+                    setSortType(value);
+                    console.log(sortType);
+                }}
+                value={sortType}
+                defaultValue={sortType}
+            >
+                {SortByOptions.map((SortByOption) => (
+                    <Select.Option
+                        key={SortByOption.label}
+                        label={SortByOption.label}
+                        value={SortByOption.value}
+                    />
+                ))}
+            </Select>
+            <Select
+                prefixLabel="Results to Display"
+                name="ResultsPerPage"
+                onChange={(event, { value }) => {
+                    setPostsPerPage(value);
+                }}
+                value={postsPerPage}
+                defaultValue={postsPerPage}
+            >
+                <Select.Option label="10" value="10" />
+                <Select.Option label="20" value="20" />
+                <Select.Option label="50" value="50" />
+                <Select.Option label="100" value="100" />
+            </Select>
+            <Button
+                icon={<Plus screenReaderText={null} />}
+                label="Add New Asset"
+                to={`view-asset?key=`}
+                openInNewContext
+                appearance="primary"
             />
 
-
-                        <Select
-                           labelText ="Sort"
-                            name="sortby"
-                            onChange= {(event,{ value }) => {
-                                setSortType(value)
-                                console.log(sortType);
-                            }}
-                            value= {sortType}
-                        >
-                         <Select.Option label="Index Name" value="index_name" />
-                         <Select.Option label="AbilityApp Name" value="ability_app_name" />
-                         <Select.Option label="Index Size" value="index_size_mb" />
-                         <Select.Option label="Index Type" value="index_type" />
-                         <Select.Option label="Splunk Role Name" value="splunk_role_name" />
-                        </Select>
-
-             <Button icon={<Plus screenReaderText={null} />} label="Add New Asset"  to={`view-asset?key=`}  openInNewContext/>
-
-            <SplunkThemeProvider family="prisma" colorScheme="light"  density="comfortable">
+            <SplunkThemeProvider family="prisma" colorScheme="light" density="comfortable">
                 <div>
-                    <CardLayout cardWidth={250} gutterSize={15}  alignCards="left">
-                    {Cards}
+                    <CardLayout cardWidth={250} gutterSize={15} alignCards="left">
+                        {Cards}
                     </CardLayout>
-                    </div>
+                </div>
+                <Paginator
+                    style={{ float: 'right', width: '30%' }}
+                    current={currentPage}
+                    totalPages={lastpage}
+                    onChange={handlePaginatorChange}
+                />
             </SplunkThemeProvider>
         </div>
     );
