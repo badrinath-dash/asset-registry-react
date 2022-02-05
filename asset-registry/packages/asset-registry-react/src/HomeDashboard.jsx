@@ -14,14 +14,15 @@ import Plus from '@splunk/react-icons/Plus';
 import Select from '@splunk/react-ui/Select';
 import Paginator from '@splunk/react-ui/Paginator';
 import { isInternalLink, NavigationProvider } from '@splunk/react-ui/Clickable';
-//import ControlGroup from '@splunk/react-ui/ControlGroup';
+import ControlGroup from '@splunk/react-ui/ControlGroup';
 import { includes, without } from 'lodash';
+import RadioList from '@splunk/react-ui/RadioList';
+import Dropdown from '@splunk/react-ui/Dropdown';
 
 // Custom Imports inside this react App
 import { searchKVStore } from './ManageKVStore';
 import { StyledButton } from './AssetRegistryReactStyles';
 import { SortByOptions } from './DropDownData';
-
 
 const HomeDashboardReact = () => {
     // const history = useHistory();
@@ -31,6 +32,11 @@ const HomeDashboardReact = () => {
     const [sortType, setSortType] = useState('index_name');
     const [currentPage, setCurrentPage] = useState(1);
     const [postsPerPage, setPostsPerPage] = useState(10);
+    const [colorScheme, setColorScheme] = useState('light');
+    const [colorFamily, setColorFamily] = useState('prisma');
+    const toggle = <Button appearance="toggle" label="Customized Options" isMenu />;
+
+    const closeReasons = without(Dropdown.possibleCloseReasons, 'contentClick');
 
     // Function to handle Pagination
     const handlePaginatorChange = (event, { page }) => {
@@ -96,13 +102,6 @@ const HomeDashboardReact = () => {
         console.log(searchTerm);
     }
 
-    // function handleCardSelect(event) {
-    //     //event.preventDefault();
-    //     console.log(event);
-    //     // history.push("/view-asset");
-    //     return  <Redirect  to={`/view-asset/_key=${event}`} />
-    // }
-
     const handleClick = (e, { openInNewContext, to }) => {
         if (!openInNewContext && isInternalLink(to)) {
             e.preventDefault();
@@ -149,80 +148,119 @@ const HomeDashboardReact = () => {
         ));
 
     return (
-        <div>
-            {infoMessage.visible && (
-                <Message
-                    style={{ background: '#c3cbd4' }}
-                    appearance="fill"
-                    type={infoMessage.type || 'info'}
-                    onRequestRemove={handleMessageRemove}
-                >
-                    {infoMessage.message}
-                </Message>
-            )}
-            <br></br>
 
-            <Text
-                style={{ float: 'right', width: '20%' }}
-                defaultValue=""
-                name="search_input"
-                onChange={(event) => {
-                    setSearchTerm(event.target.value.toLowerCase());
-                }}
-                endAdornment={
-                    <>
-                        <StyledButton
-                            onClick={SearchInputChange}
-                            appearance="pill"
-                            icon={<Search />}
-                        />
-                    </>
-                }
-                inline
-                placeholder="Enter index name to search"
-            />
-            <Select
-                prefixLabel="Sort"
-                name="sortby"
+            <div style={{ background: 'black'}}>
+               <SplunkThemeProvider family={colorFamily} colorScheme={colorScheme} density="comfortable">
+                {infoMessage.visible && (
+                    <Message
+                        style={{ background: '#c3cbd4' }}
+                        appearance="fill"
+                        type={infoMessage.type || 'info'}
+                        onRequestRemove={handleMessageRemove}
+                    >
+                        {infoMessage.message}
+                    </Message>
+                )}
+                <ControlGroup style={{ float: 'right'}}>
+                    <Dropdown toggle={toggle} retainFocus closeReasons={closeReasons}>
+                        <div style={{ padding: 20, width: 300 }}>
+                            <ControlGroup label="Color" labelPosition="top">
+                                <RadioList
+                                    name="color_scheme"
+                                    value={colorScheme}
+                                    onChange={(event, { value }) => {
+                                        setColorScheme(value);
+                                    }}
+                                >
+                                    <RadioList.Option value="light">Light</RadioList.Option>
+                                    <RadioList.Option value="dark">Dark</RadioList.Option>
+                                </RadioList>
+                            </ControlGroup>
+                            <ControlGroup ControlGroup label="Family" labelPosition="top">
+                                <RadioList
+                                    name="color_family"
+                                    value={colorFamily}
+                                    onChange={(event, { value }) => {
+                                        setColorFamily(value);
+                                    }}
+                                >
+                                    <RadioList.Option value="prisma">Prisma</RadioList.Option>
+                                    <RadioList.Option value="enterprise">
+                                        EnterPrise
+                                    </RadioList.Option>
+                                </RadioList>
+                            </ControlGroup>
+                            <ControlGroup ControlGroup label="Sort By" labelPosition="top">
+                                <Select
+                                    name="sortby"
+                                    onChange={(event, { value }) => {
+                                        setSortType(value);
+                                        console.log(sortType);
+                                    }}
+                                    value={sortType}
+                                    defaultValue="index_name"
+                                >
+                                    {SortByOptions.map((SortByOption) => (
+                                        <Select.Option
+                                            key={SortByOption.label}
+                                            label={SortByOption.label}
+                                            value={SortByOption.value}
+                                        />
+                                    ))}
+                                </Select>
+                            </ControlGroup>
+                            <ControlGroup
+                                ControlGroup
+                                label="Results to Display"
+                                labelPosition="top"
+                            >
+                                <Select
+                                    name="ResultsPerPage"
+                                    onChange={(event, { value }) => {
+                                        setPostsPerPage(value);
+                                    }}
+                                    value={postsPerPage}
+                                    defaultValue="10"
+                                >
+                                    <Select.Option label="10" value="10" />
+                                    <Select.Option label="20" value="20" />
+                                    <Select.Option label="50" value="50" />
+                                    <Select.Option label="100" value="100" />
+                                </Select>
+                            </ControlGroup>
+                        </div>
+                    </Dropdown>
+                </ControlGroup>
 
-                onChange={(event, { value }) => {
-                    setSortType(value);
-                    console.log(sortType);
-                }}
-                value={sortType}
-                defaultValue={sortType}
-            >
-                {SortByOptions.map((SortByOption) => (
-                    <Select.Option
-                        key={SortByOption.label}
-                        label={SortByOption.label}
-                        value={SortByOption.value}
+                <ControlGroup>
+                    <Text
+                        //style={{ float: 'left', width: '30%' }}
+                        defaultValue=""
+                        name="search_input"
+                        onChange={(event) => {
+                            setSearchTerm(event.target.value.toLowerCase());
+                        }}
+                        endAdornment={
+                            <>
+                                <StyledButton
+                                    onClick={SearchInputChange}
+                                    appearance="pill"
+                                    icon={<Search />}
+                                />
+                            </>
+                        }
+                        inline
+                        placeholder="Enter index name to search"
                     />
-                ))}
-            </Select>
-            <Select
-                prefixLabel="Results to Display"
-                name="ResultsPerPage"
-                onChange={(event, { value }) => {
-                    setPostsPerPage(value);
-                }}
-                value={postsPerPage}
-                defaultValue={postsPerPage}
-            >
-                <Select.Option label="10" value="10" />
-                <Select.Option label="20" value="20" />
-                <Select.Option label="50" value="50" />
-                <Select.Option label="100" value="100" />
-            </Select>
-            <Button
-                icon={<Plus screenReaderText={null} />}
-                label="Add New Asset"
-                to={`view-asset?key=`}
-                openInNewContext
-                appearance="primary"
-            />
-
-            <SplunkThemeProvider family="prisma" colorScheme="light" density="comfortable">
+                </ControlGroup>
+                <ControlGroup></ControlGroup>
+                <Button
+                    icon={<Plus screenReaderText={null} />}
+                    label="Add New Asset"
+                    to={`view-asset?key=`}
+                    openInNewContext
+                    appearance="primary"
+                />
                 <div>
                     <CardLayout cardWidth={250} gutterSize={15} alignCards="left">
                         {Cards}
@@ -234,8 +272,9 @@ const HomeDashboardReact = () => {
                     totalPages={lastpage}
                     onChange={handlePaginatorChange}
                 />
-            </SplunkThemeProvider>
-        </div>
+                 </SplunkThemeProvider>
+            </div>
+
     );
 };
 

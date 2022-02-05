@@ -23,13 +23,7 @@ const themeProviderSettings = getThemeOptions(defaultTheme() || 'enterprise');
 
 
 layout(
-    <SplunkThemeProvider family="prisma" colorScheme="light"  density="comfortable">
-        <StyledContainer>
-
-            <StyledGreeting>Splunk Data Catalog Home</StyledGreeting>
             <HomeDashboardReact name="from inside HomeDashboardReact" />
-        </StyledContainer>
-</SplunkThemeProvider>
 );
 
 
